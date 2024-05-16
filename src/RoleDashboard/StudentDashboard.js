@@ -1,10 +1,11 @@
 // StudentDashboard.js
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../CssFiles/studentdashboard.css';
 import '../CssFiles/headbar.css';
 import HeaderBar from '../Utilities/HeadBar';
-import StudentSidebar from '../Utilities/StudentSideBar';
+import StudentSideBar from '../Utilities/StudentSideBar';
 
 function StudentDashboard() {
   const [showSidebar, setShowSidebar] = useState(true);
@@ -53,7 +54,7 @@ function StudentDashboard() {
   return (
     <div>
       <HeaderBar showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
-      <StudentSidebar
+      <StudentSideBar
         showSidebar={showSidebar}
         toggleSidebar={toggleSidebar}
         handleLogout={handleLogout}

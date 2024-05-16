@@ -1,11 +1,12 @@
 // PrincipalDashboard.js
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../CssFiles/principaldashboard.css';
 import '../CssFiles/headbar.css';
 import HeaderBar from '../Utilities/HeadBar';
 import SearchFilter from '../Utilities/SearchFilter';
-import PrincipalSidebar from '../Utilities/PrincipalSideBar';
+import PrincipalSideBar from '../Utilities/PrincipalSideBar'; // Correct import
 
 function PrincipalDashboard() {
   const [showSidebar, setShowSidebar] = useState(true);
@@ -236,11 +237,10 @@ function PrincipalDashboard() {
     setShowSectionFilters(false);
     setShowEnrolledStudents(false); // Reset other sections
   };
-
   return (
     <div>
       <HeaderBar showSidebar={showSidebar} toggleSidebar={toggleSidebar} />
-      <PrincipalSidebar
+      <PrincipalSideBar
         showSidebar={showSidebar}
         toggleSidebar={toggleSidebar}
         setShowInfo={setShowInfo}

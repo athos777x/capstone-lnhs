@@ -1,4 +1,4 @@
-/* studentdashboard.css and principaldashboard.css */
+/* principaldashboard.css */
 .sidebar {
   width: 250px;
   background-color: #222;
@@ -37,4 +37,13 @@
 
 .sidebar .buttons button:hover {
   background-color: #444;
+}
+
+.content {
+  transition: margin-left 0.3s ease;
+  margin-left: 0; /* Default margin */
+}
+
+.content-shift {
+  margin-left: 250px; /* Adjust to match the width of the sidebar */
 }
