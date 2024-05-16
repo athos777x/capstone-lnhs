@@ -1,39 +1,40 @@
-/* studentdashboard.css */
-
-/* Sidebar container styles */
+/* studentdashboard.css and principaldashboard.css */
 .sidebar {
-  width: 250px; /* Adjust width as needed */
-  position: fixed;
+  width: 250px;
+  background-color: #222;
+  color: white;
+  transition: transform 0.3s ease;
+  padding: 0;
+  height: 100vh; /* Ensure the sidebar occupies the full height */
+  position: fixed; /* Fix the position to the left */
   top: 0;
   left: 0;
-  height: 100%;
-  background-color: #333; /* Adjust background color as needed */
-  padding-top: 20px; /* Add some top padding */
-  overflow-y: auto; /* Allow vertical scrolling if content exceeds height */
 }
 
-/* Button container styles */
+.sidebar.show {
+  transform: translateX(0);
+}
+
+.sidebar.hide {
+  transform: translateX(-100%);
+}
+
 .sidebar .buttons {
   display: flex;
-  flex-direction: column; /* Align buttons vertically */
-  gap: 10px; /* Add space between buttons */
-  padding: 10px; /* Add some padding around the buttons */
+  flex-direction: column;
+  margin-top: 50px; /* Adjust to provide space below the toggle button */
 }
 
-/* Button styles */
 .sidebar .buttons button {
-  background-color: #444; /* Adjust button background color as needed */
-  color: white; /* Button text color */
+  background-color: #333;
+  color: white;
   border: none;
-  padding: 10px; /* Button padding */
-  text-align: left; /* Align text to the left */
-  width: 100%; /* Full width buttons */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s; /* Smooth transition for background color change */
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
 }
 
-/* Button hover effect */
 .sidebar .buttons button:hover {
-  background-color: #555; /* Change background color on hover */
+  background-color: #444;
 }
-

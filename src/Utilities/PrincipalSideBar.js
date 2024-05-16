@@ -1,7 +1,6 @@
 // PrincipalSideBar.js
 
 import React, { useState } from 'react';
-
 import '../CssFiles/principaldashboard.css';
 
 function PrincipalSidebar({ showSidebar, toggleSidebar, handleLogout, handleShowHome, handleShowStudents, handleShowGrades, handleShowAttendance, handleShowEmployee, handleShowEnrollment, handleShowSchoolYear, handleShowSection, handleShowEnrolledStudents, handleShowSubjects, handleShowGenerateReport }) {
@@ -29,10 +28,13 @@ function PrincipalSidebar({ showSidebar, toggleSidebar, handleLogout, handleShow
 
   return (
     <div className={`sidebar ${showSidebar ? 'show' : 'hide'}`}>
+      <button className="toggle-btn" onClick={toggleSidebar}>
+        {showSidebar ? 'Hide Sidebar' : 'Show Sidebar'}
+      </button>
       <div className="buttons">
         <button onClick={handleShowHome}>Home</button>
         <button onClick={handleShowStudents}>Students</button>
-        <div className="menu-with-submenu">
+        <div className={`menu-with-submenu ${showRecordsSubMenu ? 'active' : ''}`}>
           <button onClick={toggleRecordsSubMenu}>Student Academic Records</button>
           {showRecordsSubMenu && (
             <div className="submenu">
@@ -42,7 +44,7 @@ function PrincipalSidebar({ showSidebar, toggleSidebar, handleLogout, handleShow
           )}
         </div>
         <button onClick={handleShowEmployee}>Employee</button>
-        <div className="menu-with-submenu">
+        <div className={`menu-with-submenu ${showEnrollmentSubMenu ? 'active' : ''}`}>
           <button onClick={toggleEnrollmentSubMenu}>Enrollment</button>
           {showEnrollmentSubMenu && (
             <div className="submenu">
@@ -53,7 +55,7 @@ function PrincipalSidebar({ showSidebar, toggleSidebar, handleLogout, handleShow
           )}
         </div>
         <button onClick={handleShowSubjects}>Subjects</button>
-        <div className="menu-with-submenu">
+        <div className={`menu-with-submenu ${showReportSubMenu ? 'active' : ''}`}>
           <button onClick={toggleReportSubMenu}>Generate Report</button>
           {showReportSubMenu && (
             <div className="submenu">
