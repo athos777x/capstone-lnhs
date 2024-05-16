@@ -1,0 +1,32 @@
+/* headbar.css */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the title */
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  position: relative;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.toggle-btn {
+  position: absolute;
+  left: 210px; /* Adjust this value to ensure the button is not overlapping the sidebar */
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  z-index: 2; /* Ensures the button stays above the sidebar */
+}
+
+.toggle-btn:focus {
+  outline: none;
+}

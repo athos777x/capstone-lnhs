@@ -1,0 +1,46 @@
+/* searchfilter.css */
+
+.search-filter {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line if necessary */
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-filter input[type="text"],
+.search-filter select {
+  margin: 5px; /* Adjusted margin for all sides */
+  padding: 5px;
+  font-size: 16px;
+}
+
+.search-filter label {
+  margin: 5px; /* Adjusted margin for all sides */
+}
+
+.search-filter button {
+  margin: 5px; /* Adjusted margin for all sides */
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-filter button:hover {
+  background-color: #0056b3;
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 600px) {
+  .search-filter {
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .search-filter button {
+    margin-top: 10px; /* Add more margin between button and inputs */
+  }
+}
+
+/* Add any additional styles specific to SearchFilter component below */
