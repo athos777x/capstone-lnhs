@@ -1,3 +1,8 @@
+// type
+// cd backend
+// node server.js
+// in terminal to start server
+
 import React, { useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'; 
 import './App.css';
@@ -6,30 +11,18 @@ import PrincipalDashboard from './RoleDashboard/PrincipalDashboard';
 import LoginForm from './Utilities/LoginForm'; 
 
 // Credentials for different roles
-const credentials = {
-  principal: {
-    username: 'admin',
-    password: 'password'
-  },
-  student: {
-    username: 'student',
-    password: 'password'
-  }
-}
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [role, setRole] = useState('');
 
-  const handleLogin = (username, password, navigate) => { // remove the navigate parameter
-    if (username === credentials.principal.username && password === credentials.principal.password) {
-      setIsAuthenticated(true);
+  const handleLogin = (username, password, navigate, userRole) => {
+    setIsAuthenticated(true);
+    setRole(userRole);
+    if (userRole === 'principal') {
       navigate('/principal-dashboard');
-    } else if (username === credentials.student.username && password === credentials.student.password) {
-      setIsAuthenticated(true);
+    } else if (userRole === 'student') {
       navigate('/student-dashboard');
-    } else {
-      // Handle incorrect credentials
-      alert('Incorrect username or password');
     }
   };
 
@@ -46,3 +39,4 @@ function App() {
 }
 
 export default App;
+

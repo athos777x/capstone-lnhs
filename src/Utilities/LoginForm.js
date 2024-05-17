@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // import useNavigate
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function LoginForm({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
-  const navigate = useNavigate(); // Use useNavigate hook here
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    onLogin(username, password, navigate); // Pass navigate here
+    try {
+      const response = await axios.post('http://localhost:3001/login', { username, password });
+      if (response.data.authenticated) {
+        onLogin(username, password, navigate, response.data.role);
+      } else {
+        alert('Incorrect username or password');
+      }
+    } catch (error) {
+      console.error('There was an error!', error);
+    }
   };
 
   return (
