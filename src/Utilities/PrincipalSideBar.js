@@ -1,29 +1,30 @@
 // PrincipalSideBar.js
-
 import React, { useState } from 'react';
 import '../CssFiles/principaldashboard.css';
+import HomeButton from '../Buttons/HomeButton';
+import StudentsButton from '../Buttons/StudentsButton';
+import GradesButton from '../Buttons/GradesButton';
+import AttendanceButton from '../Buttons/AttendanceButton';
+import EmployeeButton from '../Buttons/EmployeeButton';
+import SchoolYearButton from '../Buttons/SchoolYearButton';
+import EnrolledStudentsButton from '../Buttons/EnrolledStudentsButton';
+import SectionButton from '../Buttons/SectionButton';
+import SubjectsButton from '../Buttons/SubjectsButton';
+import LogoutButton from '../Buttons/LogoutButton';
+import GenerateReportsButton from '../Buttons/GenerateReportsButton';
 
-function PrincipalSidebar({ showSidebar, toggleSidebar, handleLogout, handleShowHome, handleShowStudents, handleShowGrades, handleShowAttendance, handleShowEmployee, handleShowEnrollment, handleShowSchoolYear, handleShowSection, handleShowEnrolledStudents, handleShowSubjects, handleShowGenerateReport }) {
+function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
   const [showRecordsSubMenu, setShowRecordsSubMenu] = useState(false);
   const [showEnrollmentSubMenu, setShowEnrollmentSubMenu] = useState(false);
-  const [showReportSubMenu, setShowReportSubMenu] = useState(false);
 
   const toggleRecordsSubMenu = () => {
-    setShowRecordsSubMenu(prevState => !prevState);
-    setShowEnrollmentSubMenu(false);
-    setShowReportSubMenu(false);
+    setShowRecordsSubMenu(!showRecordsSubMenu);
+    setShowEnrollmentSubMenu(false); // Ensure only one submenu is open at a time
   };
 
   const toggleEnrollmentSubMenu = () => {
-    setShowEnrollmentSubMenu(prevState => !prevState);
-    setShowRecordsSubMenu(false);
-    setShowReportSubMenu(false);
-  };
-
-  const toggleReportSubMenu = () => {
-    setShowReportSubMenu(prevState => !prevState);
-    setShowRecordsSubMenu(false);
-    setShowEnrollmentSubMenu(false);
+    setShowEnrollmentSubMenu(!showEnrollmentSubMenu);
+    setShowRecordsSubMenu(false); // Ensure only one submenu is open at a time
   };
 
   return (
@@ -32,43 +33,34 @@ function PrincipalSidebar({ showSidebar, toggleSidebar, handleLogout, handleShow
         {showSidebar ? 'Hide Sidebar' : 'Show Sidebar'}
       </button>
       <div className="buttons">
-        <button onClick={handleShowHome}>Home</button>
-        <button onClick={handleShowStudents}>Students</button>
+        <HomeButton />
+        <StudentsButton />
         <div className={`menu-with-submenu ${showRecordsSubMenu ? 'active' : ''}`}>
           <button onClick={toggleRecordsSubMenu}>Student Academic Records</button>
           {showRecordsSubMenu && (
             <div className="submenu">
-              <button onClick={handleShowGrades}>--Grades</button>
-              <button onClick={handleShowAttendance}>--Attendance</button>
+              <GradesButton />
+              <AttendanceButton />
             </div>
           )}
         </div>
-        <button onClick={handleShowEmployee}>Employee</button>
+        <EmployeeButton />
         <div className={`menu-with-submenu ${showEnrollmentSubMenu ? 'active' : ''}`}>
           <button onClick={toggleEnrollmentSubMenu}>Enrollment</button>
           {showEnrollmentSubMenu && (
             <div className="submenu">
-              <button onClick={handleShowSchoolYear}>--School Year</button>
-              <button onClick={handleShowSection}>--Section</button>
-              <button onClick={handleShowEnrolledStudents}>--Enrolled Students</button>
+              <SchoolYearButton />
+              <SectionButton />
+              <EnrolledStudentsButton />
             </div>
           )}
         </div>
-        <button onClick={handleShowSubjects}>Subjects</button>
-        <div className={`menu-with-submenu ${showReportSubMenu ? 'active' : ''}`}>
-          <button onClick={toggleReportSubMenu}>Generate Report</button>
-          {showReportSubMenu && (
-            <div className="submenu">
-              <button onClick={() => handleShowGenerateReport('enrollees')}>--List of student enrollees</button>
-              <button onClick={() => handleShowGenerateReport('earlyEnrollment')}>--Early Enrollment Report</button>
-              <button onClick={() => handleShowGenerateReport('summaryPromotion')}>--Summary Report on Promotion</button>
-            </div>
-          )}
-        </div>
-        <button onClick={handleLogout}>Logout</button>
+        <SubjectsButton />
+        <GenerateReportsButton /> {/* Add Generate Reports Button here */}
+        <LogoutButton onClick={handleLogout} />
       </div>
     </div>
   );
 }
 
-export default PrincipalSidebar;
+export default PrincipalSideBar;
