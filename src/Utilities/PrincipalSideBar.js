@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import '../CssFiles/principaldashboard.css';
 import HomeButton from '../Buttons/HomeButton';
-import StudentsButton from '../Buttons/StudentsButton';
 import GradesButton from '../Buttons/GradesButton';
 import AttendanceButton from '../Buttons/AttendanceButton';
 import EmployeeButton from '../Buttons/EmployeeButton';
@@ -11,14 +10,17 @@ import EnrolledStudentsButton from '../Buttons/EnrolledStudentsButton';
 import SectionButton from '../Buttons/SectionButton';
 import SubjectsButton from '../Buttons/SubjectsButton';
 import LogoutButton from '../Buttons/LogoutButton';
+import GenerateReportsButton from '../Buttons/GenerateReportsButton';
 import ListofStudentEnrolleesButton from '../Buttons/ListofStudentEnrolleesButton';
 import SummaryReportonPromotionButton from '../Buttons/SummaryReportonPromotionButton';
 import EarlyEnrollmentReportButton from '../Buttons/EarlyEnrollmentReportButton';
+import { useNavigate } from 'react-router-dom';
 
 function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
   const [showRecordsSubMenu, setShowRecordsSubMenu] = useState(false);
   const [showEnrollmentSubMenu, setShowEnrollmentSubMenu] = useState(false);
   const [showReportsSubMenu, setShowReportsSubMenu] = useState(false);
+  const navigate = useNavigate();
 
   const toggleRecordsSubMenu = () => {
     setShowRecordsSubMenu(!showRecordsSubMenu);
@@ -38,6 +40,10 @@ function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
     setShowEnrollmentSubMenu(false);
   };
 
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
+
   return (
     <div className={`sidebar ${showSidebar ? 'show' : 'hide'}`}>
       <button className="toggle-btn" onClick={toggleSidebar}>
@@ -45,12 +51,12 @@ function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
       </button>
       <div className="buttons">
         <HomeButton />
-        <StudentsButton />
+        <button onClick={() => handleNavigate('/students')}>Students</button>
         <div className={`menu-with-submenu ${showRecordsSubMenu ? 'active' : ''}`}>
           <button onClick={toggleRecordsSubMenu}>Student Academic Records</button>
           {showRecordsSubMenu && (
             <div className="submenu">
-              <GradesButton />
+               <button onClick={() => handleNavigate('/grades')}>--Grades</button> {/* REMINDER HERE USE THE GRADESBUTTTON COMPONENT */}
               <AttendanceButton />
             </div>
           )}
@@ -84,3 +90,4 @@ function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
 }
 
 export default PrincipalSideBar;
+
