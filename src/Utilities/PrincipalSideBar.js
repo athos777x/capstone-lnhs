@@ -11,20 +11,31 @@ import EnrolledStudentsButton from '../Buttons/EnrolledStudentsButton';
 import SectionButton from '../Buttons/SectionButton';
 import SubjectsButton from '../Buttons/SubjectsButton';
 import LogoutButton from '../Buttons/LogoutButton';
-import GenerateReportsButton from '../Buttons/GenerateReportsButton';
+import ListofStudentEnrolleesButton from '../Buttons/ListofStudentEnrolleesButton';
+import SummaryReportonPromotionButton from '../Buttons/SummaryReportonPromotionButton';
+import EarlyEnrollmentReportButton from '../Buttons/EarlyEnrollmentReportButton';
 
 function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
   const [showRecordsSubMenu, setShowRecordsSubMenu] = useState(false);
   const [showEnrollmentSubMenu, setShowEnrollmentSubMenu] = useState(false);
+  const [showReportsSubMenu, setShowReportsSubMenu] = useState(false);
 
   const toggleRecordsSubMenu = () => {
     setShowRecordsSubMenu(!showRecordsSubMenu);
-    setShowEnrollmentSubMenu(false); // Ensure only one submenu is open at a time
+    setShowEnrollmentSubMenu(false);
+    setShowReportsSubMenu(false);
   };
 
   const toggleEnrollmentSubMenu = () => {
     setShowEnrollmentSubMenu(!showEnrollmentSubMenu);
-    setShowRecordsSubMenu(false); // Ensure only one submenu is open at a time
+    setShowRecordsSubMenu(false);
+    setShowReportsSubMenu(false);
+  };
+
+  const toggleReportsSubMenu = () => {
+    setShowReportsSubMenu(!showReportsSubMenu);
+    setShowRecordsSubMenu(false);
+    setShowEnrollmentSubMenu(false);
   };
 
   return (
@@ -56,7 +67,16 @@ function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
           )}
         </div>
         <SubjectsButton />
-        <GenerateReportsButton /> {/* Add Generate Reports Button here */}
+        <div className={`menu-with-submenu ${showReportsSubMenu ? 'active' : ''}`}>
+          <button onClick={toggleReportsSubMenu}>Generate Reports</button>
+          {showReportsSubMenu && (
+            <div className="submenu">
+              <ListofStudentEnrolleesButton />
+              <SummaryReportonPromotionButton />
+              <EarlyEnrollmentReportButton />
+            </div>
+          )}
+        </div>
         <LogoutButton onClick={handleLogout} />
       </div>
     </div>

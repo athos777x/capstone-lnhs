@@ -18,7 +18,10 @@ import EmployeePage from './Pages/EmployeePage';
 import SchoolYearPage from './Pages/SchoolYearPage';
 import EnrolledStudentsPage from './Pages/EnrolledStudentsPage';
 import SubjectsPage from './Pages/SubjectsPage';
-import GenerateReportsPage from './Pages/GenerateReportsPage'; // Import the Generate Reports page
+import GenerateReportsPage from './Pages/GenerateReportsPage';
+import ListofStudentEnrolleesPage from './Pages/ListofStudentEnrolleesPage';
+import SummaryReportonPromotionPage from './Pages/SummaryReportonPromotionPage';
+import EarlyEnrollmentReportPage from './Pages/EarlyEnrollmentReportPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,7 +62,10 @@ function App() {
             <Route path="/school-year" element={<SchoolYearPage />} />
             <Route path="/enrolled-students" element={<EnrolledStudentsPage />} />
             <Route path="/subjects" element={<SubjectsPage />} />
-            <Route path="/generate-reports" element={<GenerateReportsPage />} /> {/* Add route for Generate Reports */}
+            <Route path="/generate-reports" element={<GenerateReportsPage />} />
+            <Route path="/list-of-student-enrollees" element={<ListofStudentEnrolleesPage />} />
+            <Route path="/summary-report-promotion" element={<SummaryReportonPromotionPage />} />
+            <Route path="/early-enrollment-report" element={<EarlyEnrollmentReportPage />} />
           </Route>
         )}
         <Route path="*" element={<Navigate to="/" />} />
