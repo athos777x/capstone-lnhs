@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
@@ -30,6 +31,15 @@ app.post('/login', (req, res) => {
     } else {
       res.json({ authenticated: false });
     }
+  });
+});
+
+// Add a new endpoint to fetch student data
+app.get('/students', (req, res) => {
+  const query = 'SELECT * FROM students';
+  db.query(query, (err, results) => {
+    if (err) throw err;
+    res.json(results);
   });
 });
 

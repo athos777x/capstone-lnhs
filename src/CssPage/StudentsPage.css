@@ -1,0 +1,63 @@
+/* StudentsPage.css */
+
+.students-container {
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.students-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.student-item {
+  padding: 10px;
+  margin: 10px 0;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.student-item p {
+  margin: 5px 0;
+}
+
+.search-filter-container {
+  margin-bottom: 20px;
+}
+
+.search-filter input,
+.search-filter select,
+.search-filter button {
+  margin: 5px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+.search-filter button {
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.search-filter button:hover {
+  background-color: #0056b3;
+}
+
+.student-details {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+}
+
+.student-details p {
+  margin: 5px 0;
+}
