@@ -9,12 +9,20 @@ function StudentsPage() {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
 
+  const [filters, setFilters] = useState({
+    year: '',
+    grade: '',
+    section: '',
+    searchTerm: ''
+  });
+
   useEffect(() => {
     axios.get('http://localhost:3001/students')
       .then(response => {
         const sortedStudents = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setStudents(sortedStudents);
         setFilteredStudents(sortedStudents);
+        console.log('Fetched students:', sortedStudents);
       })
       .catch(error => {
         console.error('There was an error fetching the students!', error);
@@ -22,28 +30,33 @@ function StudentsPage() {
   }, []);
 
   const handleSearch = (searchTerm) => {
-    const filtered = students.filter(student =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredStudents(filtered);
+    setFilters(prevFilters => ({ ...prevFilters, searchTerm }));
   };
 
-  const handleFilter = (type, value) => {
-    let filtered = students;
-
-    if (type === 'year') {
-      filtered = filtered.filter(student => student.year === value);
-    } else if (type === 'grade') {
-      filtered = filtered.filter(student => student.grade === value);
-    } else if (type === 'section') {
-      filtered = filtered.filter(student => student.section === value);
-    }
-
-    setFilteredStudents(filtered);
+  const handleFilterChange = (type, value) => {
+    setFilters(prevFilters => ({ ...prevFilters, [type]: value }));
   };
 
   const handleApplyFilters = () => {
-    // This can be used if additional logic is needed when applying filters
+    let filtered = students;
+
+    if (filters.year) {
+      filtered = filtered.filter(student => String(student.year) === filters.year);
+    }
+    if (filters.grade) {
+      filtered = filtered.filter(student => student.grade === filters.grade);
+    }
+    if (filters.section) {
+      filtered = filtered.filter(student => student.section === filters.section);
+    }
+    if (filters.searchTerm) {
+      filtered = filtered.filter(student =>
+        student.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredStudents(filtered);
+    console.log('Filtered students:', filtered);
   };
 
   const handleStudentClick = (studentId) => {
@@ -56,7 +69,7 @@ function StudentsPage() {
       <div className="search-filter-container">
         <SearchFilter
           handleSearch={handleSearch}
-          handleFilter={handleFilter}
+          handleFilter={handleFilterChange}
           handleApplyFilters={handleApplyFilters}
         />
       </div>
@@ -82,3 +95,4 @@ function StudentsPage() {
 }
 
 export default StudentsPage;
+
