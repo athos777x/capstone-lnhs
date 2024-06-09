@@ -13,7 +13,7 @@ import SectionPage from './Pages/SectionPage';
 import HomePage from './Pages/HomePage';
 import StudentsPage from './Pages/StudentsPage';
 import GradesPage from './Pages/GradesPage';
-import AttendancePage from './Pages/AttendancePage';
+import AttendancePage from './Pages/AttendancePage'; // Ensure this import is correct
 import EmployeePage from './Pages/EmployeePage';
 import SchoolYearPage from './Pages/SchoolYearPage';
 import EnrolledStudentsPage from './Pages/EnrolledStudentsPage';
@@ -57,7 +57,7 @@ function App() {
             <Route path="/home" element={<HomePage />} />
             <Route path="/students" element={<StudentsPage />} />
             <Route path="/grades" element={<GradesPage />} />
-            <Route path="/attendance" element={<AttendancePage />} />
+            <Route path="/attendance" element={<AttendancePage />} /> {/* Add the route here */}
             <Route path="/employee" element={<EmployeePage />} />
             <Route path="/school-year" element={<SchoolYearPage />} />
             <Route path="/enrolled-students" element={<EnrolledStudentsPage />} />
@@ -75,6 +75,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

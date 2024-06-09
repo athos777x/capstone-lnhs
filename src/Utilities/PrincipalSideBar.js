@@ -1,8 +1,8 @@
 // PrincipalSideBar.js
 import React, { useState } from 'react';
 import '../CssFiles/principaldashboard.css';
+import { useNavigate } from 'react-router-dom';
 import HomeButton from '../Buttons/HomeButton';
-import GradesButton from '../Buttons/GradesButton';
 import AttendanceButton from '../Buttons/AttendanceButton';
 import EmployeeButton from '../Buttons/EmployeeButton';
 import SchoolYearButton from '../Buttons/SchoolYearButton';
@@ -10,11 +10,9 @@ import EnrolledStudentsButton from '../Buttons/EnrolledStudentsButton';
 import SectionButton from '../Buttons/SectionButton';
 import SubjectsButton from '../Buttons/SubjectsButton';
 import LogoutButton from '../Buttons/LogoutButton';
-import GenerateReportsButton from '../Buttons/GenerateReportsButton';
 import ListofStudentEnrolleesButton from '../Buttons/ListofStudentEnrolleesButton';
 import SummaryReportonPromotionButton from '../Buttons/SummaryReportonPromotionButton';
 import EarlyEnrollmentReportButton from '../Buttons/EarlyEnrollmentReportButton';
-import { useNavigate } from 'react-router-dom';
 
 function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
   const [showRecordsSubMenu, setShowRecordsSubMenu] = useState(false);
@@ -56,7 +54,7 @@ function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
           <button onClick={toggleRecordsSubMenu}>Student Academic Records</button>
           {showRecordsSubMenu && (
             <div className="submenu">
-               <button onClick={() => handleNavigate('/grades')}>--Grades</button> {/* REMINDER HERE USE THE GRADESBUTTTON COMPONENT */}
+              <button onClick={() => handleNavigate('/grades')}>--Grades</button>
               <AttendanceButton />
             </div>
           )}
@@ -90,4 +88,7 @@ function PrincipalSideBar({ showSidebar, toggleSidebar, handleLogout }) {
 }
 
 export default PrincipalSideBar;
+
+
+
 
