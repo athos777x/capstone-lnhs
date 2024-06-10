@@ -1,4 +1,4 @@
-//SearchFilter.js
+// SearchFilter.js
 import React, { useState, useEffect } from 'react';
 import '../CssFiles/searchfilter.css';
 import axios from 'axios';
@@ -93,4 +93,3 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
 }
 
 export default SearchFilter;
-

@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
@@ -20,8 +19,7 @@ db.connect(err => {
   console.log('Connected to database');
 });
 
-// Existing endpoints...
-
+// Login endpoint
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
@@ -35,7 +33,7 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Add a new endpoint to fetch student data
+// Endpoint to fetch all students
 app.get('/students', (req, res) => {
   const query = 'SELECT * FROM students';
   db.query(query, (err, results) => {
@@ -44,10 +42,10 @@ app.get('/students', (req, res) => {
   });
 });
 
-// Add the new endpoint to fetch filter options
+// Endpoint to fetch filter options
 app.get('/filters', (req, res) => {
   const yearsQuery = 'SELECT DISTINCT year FROM students';
-  const gradesQuery = 'SELECT DISTINCT grade FROM students';
+  const gradesQuery = 'SELECT DISTINCT grade_level FROM students';
   const sectionsQuery = 'SELECT DISTINCT section FROM students';
 
   const yearsPromise = new Promise((resolve, reject) => {
@@ -60,7 +58,7 @@ app.get('/filters', (req, res) => {
   const gradesPromise = new Promise((resolve, reject) => {
     db.query(gradesQuery, (err, results) => {
       if (err) reject(err);
-      resolve(results.map(row => row.grade));
+      resolve(results.map(row => row.grade_level));
     });
   });
 
@@ -78,6 +76,21 @@ app.get('/filters', (req, res) => {
     .catch(err => {
       res.status(500).json({ error: 'Failed to fetch filter options' });
     });
+});
+
+// Endpoint to fetch grades for a specific student
+app.get('/students/:id/grades', (req, res) => {
+  const studentId = req.params.id;
+  const query = `
+    SELECT ss.grade, s.subject_name 
+    FROM student_subject_grades ss
+    JOIN subjects s ON ss.subject_id = s.subject_id
+    WHERE ss.student_id = ?
+  `;
+  db.query(query, [studentId], (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
 });
 
 app.listen(3001, () => {

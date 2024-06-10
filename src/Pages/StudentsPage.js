@@ -19,6 +19,7 @@ function StudentsPage() {
   useEffect(() => {
     axios.get('http://localhost:3001/students')
       .then(response => {
+        console.log('API response:', response.data);
         const sortedStudents = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setStudents(sortedStudents);
         setFilteredStudents(sortedStudents);
@@ -44,7 +45,7 @@ function StudentsPage() {
       filtered = filtered.filter(student => String(student.year) === filters.year);
     }
     if (filters.grade) {
-      filtered = filtered.filter(student => student.grade === filters.grade);
+      filtered = filtered.filter(student => student.grade_level === filters.grade);
     }
     if (filters.section) {
       filtered = filtered.filter(student => student.section === filters.section);
@@ -75,15 +76,15 @@ function StudentsPage() {
       </div>
       <div>
         {filteredStudents.map((student, index) => (
-          <div key={student.id} className="student-item" onClick={() => handleStudentClick(student.id)}>
+          <div key={student.student_id} className="student-item" onClick={() => handleStudentClick(student.student_id)}>
             <p>{index + 1}. {student.name}</p>
-            {selectedStudentId === student.id && (
+            {selectedStudentId === student.student_id && (
               <div className="student-details">
                 <p><strong>Name:</strong> {student.name}</p>
                 <p><strong>Address:</strong> {student.address}</p>
                 <p><strong>Phone Number:</strong> {student.phone_number}</p>
                 <p><strong>Year:</strong> {student.year}</p>
-                <p><strong>Grade:</strong> {student.grade}</p>
+                <p><strong>Grade:</strong> {student.grade_level}</p>
                 <p><strong>Section:</strong> {student.section}</p>
               </div>
             )}
@@ -95,4 +96,3 @@ function StudentsPage() {
 }
 
 export default StudentsPage;
-

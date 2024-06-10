@@ -8,6 +8,8 @@ function GradesPage() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [grades, setGrades] = useState([]);
+
   const [filters, setFilters] = useState({
     year: '',
     grade: '',
@@ -43,7 +45,7 @@ function GradesPage() {
       filtered = filtered.filter(student => String(student.year) === filters.year);
     }
     if (filters.grade) {
-      filtered = filtered.filter(student => student.grade === filters.grade);
+      filtered = filtered.filter(student => student.grade_level === filters.grade);
     }
     if (filters.section) {
       filtered = filtered.filter(student => student.section === filters.section);
@@ -59,7 +61,24 @@ function GradesPage() {
   };
 
   const handleStudentClick = (studentId) => {
-    setSelectedStudentId(selectedStudentId === studentId ? null : studentId);
+    if (selectedStudentId === studentId) {
+      setSelectedStudentId(null);
+      setGrades([]);
+    } else {
+      setSelectedStudentId(studentId);
+      fetchStudentGrades(studentId);
+    }
+  };
+
+  const fetchStudentGrades = (studentId) => {
+    axios.get(`http://localhost:3001/students/${studentId}/grades`)
+      .then(response => {
+        setGrades(response.data);
+        console.log('Fetched grades:', response.data);
+      })
+      .catch(error => {
+        console.error('There was an error fetching the grades!', error);
+      });
   };
 
   return (
@@ -74,16 +93,18 @@ function GradesPage() {
       </div>
       <div>
         {filteredStudents.map((student, index) => (
-          <div key={student.id} className="student-item" onClick={() => handleStudentClick(student.id)}>
+          <div key={student.student_id} className="student-item" onClick={() => handleStudentClick(student.student_id)}>
             <p>{index + 1}. {student.name}</p>
-            {selectedStudentId === student.id && (
-              <div className="student-details">
-                <p><strong>Name:</strong> {student.name}</p>
-                <p><strong>Address:</strong> {student.address}</p>
-                <p><strong>Phone Number:</strong> {student.phone_number}</p>
-                <p><strong>Year:</strong> {student.year}</p>
-                <p><strong>Grade:</strong> {student.grade}</p>
-                <p><strong>Section:</strong> {student.section}</p>
+            {selectedStudentId === student.student_id && (
+              <div className="grades-details">
+                <h2>Grades</h2>
+                <ul>
+                  {grades.map((grade, index) => (
+                    <li key={index}>
+                      <strong>{grade.subject_name}:</strong> {grade.grade}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
@@ -94,5 +115,3 @@ function GradesPage() {
 }
 
 export default GradesPage;
-
-
