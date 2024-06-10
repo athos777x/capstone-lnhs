@@ -98,13 +98,22 @@ function GradesPage() {
             {selectedStudentId === student.student_id && (
               <div className="grades-details">
                 <h2>Grades</h2>
-                <ul>
-                  {grades.map((grade, index) => (
-                    <li key={index}>
-                      <strong>{grade.subject_name}:</strong> {grade.grade}
-                    </li>
-                  ))}
-                </ul>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Subject</th>
+                      <th>Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {grades.map((grade, index) => (
+                      <tr key={index}>
+                        <td>{grade.subject_name}</td>
+                        <td>{grade.grade}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
