@@ -1,4 +1,3 @@
-// SearchFilter.js
 import React, { useState, useEffect } from 'react';
 import '../CssFiles/searchfilter.css';
 import axios from 'axios';
@@ -29,27 +28,27 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
   }, []);
 
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    handleSearch(event.target.value);
+    const value = event.target.value;
+    setSearchTerm(value);
+    handleSearch(value);
   };
 
   const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-    handleFilter('year', event.target.value);
+    const value = event.target.value;
+    setSelectedYear(value);
+    handleFilter('year', value);
   };
 
   const handleGradeChange = (event) => {
-    setSelectedGrade(event.target.value);
-    handleFilter('grade', event.target.value);
+    const value = event.target.value;
+    setSelectedGrade(value);
+    handleFilter('grade', value);
   };
 
   const handleSectionChange = (event) => {
-    setSelectedSection(event.target.value);
-    handleFilter('section', event.target.value);
-  };
-
-  const handleApplyClick = () => {
-    handleApplyFilters();
+    const value = event.target.value;
+    setSelectedSection(value);
+    handleFilter('section', value);
   };
 
   return (
@@ -87,7 +86,7 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
           ))}
         </select>
       </div>
-      <button onClick={handleApplyClick}>Apply Filters</button>
+      <button onClick={handleApplyFilters}>Apply Filters</button>
     </div>
   );
 }

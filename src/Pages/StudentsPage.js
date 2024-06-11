@@ -1,4 +1,3 @@
-// StudentsPage.js
 import React, { useState, useEffect } from 'react';
 import SearchFilter from '../Utilities/SearchFilter';
 import axios from 'axios';
@@ -29,33 +28,44 @@ function StudentsPage() {
   }, []);
 
   const handleSearch = (searchTerm) => {
-    setFilters(prevFilters => ({ ...prevFilters, searchTerm }));
+    setFilters(prevFilters => {
+      const updatedFilters = { ...prevFilters, searchTerm };
+      applyFilters(updatedFilters);
+      return updatedFilters;
+    });
   };
 
   const handleFilterChange = (type, value) => {
-    setFilters(prevFilters => ({ ...prevFilters, [type]: value }));
+    setFilters(prevFilters => {
+      const updatedFilters = { ...prevFilters, [type]: value };
+      return updatedFilters;
+    });
   };
 
-  const handleApplyFilters = () => {
+  const applyFilters = (updatedFilters) => {
     let filtered = students;
 
-    if (filters.year) {
-      filtered = filtered.filter(student => String(student.year) === filters.year);
+    if (updatedFilters.year) {
+      filtered = filtered.filter(student => String(student.year) === updatedFilters.year);
     }
-    if (filters.grade) {
-      filtered = filtered.filter(student => student.grade_level === filters.grade);
+    if (updatedFilters.grade) {
+      filtered = filtered.filter(student => student.grade_level === updatedFilters.grade);
     }
-    if (filters.section) {
-      filtered = filtered.filter(student => student.section === filters.section);
+    if (updatedFilters.section) {
+      filtered = filtered.filter(student => student.section === updatedFilters.section);
     }
-    if (filters.searchTerm) {
+    if (updatedFilters.searchTerm) {
       filtered = filtered.filter(student =>
-        student.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+        student.name.toLowerCase().includes(updatedFilters.searchTerm.toLowerCase())
       );
     }
 
     setFilteredStudents(filtered);
     console.log('Filtered students:', filtered);
+  };
+
+  const handleApplyFilters = () => {
+    applyFilters(filters);
   };
 
   const handleStudentClick = (studentId) => {
