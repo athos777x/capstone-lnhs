@@ -11,7 +11,8 @@ function StudentsPage() {
     searchTerm: '',
     year: '',
     grade: '',
-    section: ''
+    section: '',
+    status: ''
   });
 
   useEffect(() => {
@@ -54,6 +55,9 @@ function StudentsPage() {
     if (updatedFilters.section) {
       filtered = filtered.filter(student => student.section === updatedFilters.section);
     }
+    if (updatedFilters.status) {
+      filtered = filtered.filter(student => student.status === updatedFilters.status);
+    }
     if (updatedFilters.searchTerm) {
       filtered = filtered.filter(student =>
         student.name.toLowerCase().includes(updatedFilters.searchTerm.toLowerCase())
@@ -72,6 +76,11 @@ function StudentsPage() {
     setSelectedStudentId(selectedStudentId === studentId ? null : studentId);
   };
 
+  const handleViewButtonClick = (studentId) => {
+    // Placeholder for the View button functionality
+    console.log(`View button clicked for student ID: ${studentId}`);
+  };
+
   return (
     <div className="students-container">
       <h1 className="students-title">Students</h1>
@@ -84,9 +93,14 @@ function StudentsPage() {
       </div>
       <div className="students-list">
         {filteredStudents.map((student, index) => (
-          <div key={student.student_id}>
-            <div className="student-item" onClick={() => handleStudentClick(student.student_id)}>
-              <p>{index + 1}. {student.name}</p>
+          <div key={student.student_id} className="student-item-container">
+            <div className="student-item">
+              <p onClick={() => handleStudentClick(student.student_id)}>
+                {index + 1}. {student.name} (Grade {student.grade_level}) - {student.status}
+              </p>
+              <button className="view-button" onClick={() => handleViewButtonClick(student.student_id)}>
+                View
+              </button>
             </div>
             {selectedStudentId === student.student_id && (
               <div className="student-details">
@@ -106,11 +120,15 @@ function StudentsPage() {
                     </tr>
                     <tr>
                       <td><strong>Grade:</strong></td>
-                      <td>{student.grade_level}</td>
+                      <td>Grade {student.grade_level}</td>
                     </tr>
                     <tr>
                       <td><strong>Section:</strong></td>
                       <td>{student.section}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Status:</strong></td>
+                      <td>{student.status}</td>
                     </tr>
                   </tbody>
                 </table>

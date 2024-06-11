@@ -8,6 +8,7 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedSection, setSelectedSection] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   const [years, setYears] = useState([]);
   const [grades, setGrades] = useState([]);
@@ -51,6 +52,12 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
     handleFilter('section', value);
   };
 
+  const handleStatusChange = (event) => {
+    const value = event.target.value;
+    setSelectedStatus(value);
+    handleFilter('status', value);
+  };
+
   return (
     <div className="search-filter">
       <input
@@ -84,6 +91,14 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
           {sections.map(section => (
             <option key={section} value={section}>{section}</option>
           ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="status">Status:</label>
+        <select id="status" value={selectedStatus} onChange={handleStatusChange}>
+          <option value="">Select Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
         </select>
       </div>
       <button onClick={handleApplyFilters}>Apply Filters</button>

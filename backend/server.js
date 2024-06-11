@@ -125,3 +125,11 @@ app.get('/employees/departments', (req, res) => {
 app.listen(3001, () => {
   console.log('Server running on port 3001');
 });
+
+app.get('/students', (req, res) => {
+  const query = 'SELECT * FROM students';
+  db.query(query, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
