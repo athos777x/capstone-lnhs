@@ -2,24 +2,22 @@
 import React, { useState, useEffect } from 'react';
 import SearchFilter from '../Utilities/SearchFilter';
 import axios from 'axios';
-import '../CssPage/StudentsPage.css';
+import '../CssPage/StudentsPage.css'; // Ensure this import is correct
 
 function StudentsPage() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
-
   const [filters, setFilters] = useState({
+    searchTerm: '',
     year: '',
     grade: '',
-    section: '',
-    searchTerm: ''
+    section: ''
   });
 
   useEffect(() => {
     axios.get('http://localhost:3001/students')
       .then(response => {
-        console.log('API response:', response.data);
         const sortedStudents = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setStudents(sortedStudents);
         setFilteredStudents(sortedStudents);
@@ -74,18 +72,38 @@ function StudentsPage() {
           handleApplyFilters={handleApplyFilters}
         />
       </div>
-      <div>
+      <div className="students-list">
         {filteredStudents.map((student, index) => (
-          <div key={student.student_id} className="student-item" onClick={() => handleStudentClick(student.student_id)}>
-            <p>{index + 1}. {student.name}</p>
+          <div key={student.student_id}>
+            <div className="student-item" onClick={() => handleStudentClick(student.student_id)}>
+              <p>{index + 1}. {student.name}</p>
+            </div>
             {selectedStudentId === student.student_id && (
               <div className="student-details">
-                <p><strong>Name:</strong> {student.name}</p>
-                <p><strong>Address:</strong> {student.address}</p>
-                <p><strong>Phone Number:</strong> {student.phone_number}</p>
-                <p><strong>Year:</strong> {student.year}</p>
-                <p><strong>Grade:</strong> {student.grade_level}</p>
-                <p><strong>Section:</strong> {student.section}</p>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td><strong>Address:</strong></td>
+                      <td>{student.address}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Phone Number:</strong></td>
+                      <td>{student.phone_number}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Year:</strong></td>
+                      <td>{student.year}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Grade:</strong></td>
+                      <td>{student.grade_level}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Section:</strong></td>
+                      <td>{student.section}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

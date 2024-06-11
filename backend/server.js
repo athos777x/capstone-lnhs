@@ -93,6 +93,35 @@ app.get('/students/:id/grades', (req, res) => {
   });
 });
 
+// Endpoint to fetch the employee list
+app.get('/employees', (req, res) => {
+  const query = 'SELECT * FROM employees';
+  db.query(query, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+// Endpoint to fetch distinct positions
+app.get('/employees/positions', (req, res) => {
+  const query = 'SELECT DISTINCT position FROM employees';
+  db.query(query, (err, results) => {
+    if (err) throw err;
+    console.log('Fetched positions:', results); // Debug log
+    res.json(results.map(row => row.position));
+  });
+});
+
+// Endpoint to fetch distinct departments
+app.get('/employees/departments', (req, res) => {
+  const query = 'SELECT DISTINCT department FROM employees';
+  db.query(query, (err, results) => {
+    if (err) throw err;
+    console.log('Fetched departments:', results); // Debug log
+    res.json(results.map(row => row.department));
+  });
+});
+
 app.listen(3001, () => {
   console.log('Server running on port 3001');
 });

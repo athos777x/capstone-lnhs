@@ -1,5 +1,4 @@
-// App.js
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // Removed useEffect from import
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import StudentDashboard from './RoleDashboard/StudentDashboard';
@@ -13,7 +12,7 @@ import SectionPage from './Pages/SectionPage';
 import HomePage from './Pages/HomePage';
 import StudentsPage from './Pages/StudentsPage';
 import GradesPage from './Pages/GradesPage';
-import AttendancePage from './Pages/AttendancePage'; // Ensure this import is correct
+import AttendancePage from './Pages/AttendancePage';
 import EmployeePage from './Pages/EmployeePage';
 import SchoolYearPage from './Pages/SchoolYearPage';
 import EnrolledStudentsPage from './Pages/EnrolledStudentsPage';
@@ -24,12 +23,16 @@ import SummaryReportonPromotionPage from './Pages/SummaryReportonPromotionPage';
 import EarlyEnrollmentReportPage from './Pages/EarlyEnrollmentReportPage';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem('isAuthenticated') === 'true'
+  );
+  const [role, setRole] = useState(localStorage.getItem('role') || '');
 
   const handleLogin = (username, password, navigate, userRole) => {
     setIsAuthenticated(true);
     setRole(userRole);
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('role', userRole);
     if (userRole === 'principal') {
       navigate('/principal-dashboard');
     } else if (userRole === 'student') {
@@ -40,6 +43,8 @@ function App() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     setRole('');
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('role');
   };
 
   return (
@@ -57,7 +62,7 @@ function App() {
             <Route path="/home" element={<HomePage />} />
             <Route path="/students" element={<StudentsPage />} />
             <Route path="/grades" element={<GradesPage />} />
-            <Route path="/attendance" element={<AttendancePage />} /> {/* Add the route here */}
+            <Route path="/attendance" element={<AttendancePage />} />
             <Route path="/employee" element={<EmployeePage />} />
             <Route path="/school-year" element={<SchoolYearPage />} />
             <Route path="/enrolled-students" element={<EnrolledStudentsPage />} />
