@@ -26,43 +26,41 @@ function LoginForm({ onLogin }) {
 
   return (
     <div className="login-wrapper">
-      <div className="login-container">
-        <form onSubmit={handleLogin} className="login-form">
-          <h1 className="portal-title">LNHS PORTAL</h1>
-          <img src="/lnhs-logo.png" alt="School Logo" className="login-logo" />
-          <h2 className="login-header">Login</h2>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+      <form onSubmit={handleLogin} className="login-container">
+        <h1 className="portal-title">LNHS PORTAL</h1>
+        <img src="/lnhs-logo.png" alt="School Logo" className="login-logo" />
+        <h2 className="login-header">Login</h2>
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Enter your username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <div className="password-wrapper">
             <input
-              type="text"
-              id="username"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="show-password-btn"
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
           </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="password-wrapper">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="show-password-btn"
-              >
-                {showPassword ? '🙈' : '👁️'}
-              </button>
-            </div>
-          </div>
-          <button type="submit" className="login-btn">Login</button>
-        </form>
-      </div>
+        </div>
+        <button type="submit" className="login-btn">Login</button>
+      </form>
     </div>
   );
 }
