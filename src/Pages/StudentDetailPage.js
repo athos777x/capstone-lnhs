@@ -24,7 +24,8 @@ function StudentDetailPage() {
 
   return (
     <div className="student-detail-container">
-      <h1 className="student-detail-title">Student Details</h1>
+      <h1 className="student-name-header">{student.name}</h1>
+      <h2 className="student-detail-title">Student Details</h2>
       <table className="student-detail-table">
         <tbody>
           <tr>
