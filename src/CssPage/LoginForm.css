@@ -41,16 +41,20 @@
   margin-bottom: 20px;
   text-align: left;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align the form group */
 }
 
 .form-group label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  width: 80%; /* Adjusted width */
 }
 
 .form-group input {
-  width: calc(100% - 22px);
+  width: 75%; /* Adjusted width */
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -60,10 +64,12 @@
   display: flex;
   align-items: center;
   position: relative;
+  width: 80%; /* Adjusted width to match input */
+  margin: 0 auto; /* Center the input */
 }
 
 .password-wrapper input {
-  flex-grow: 1;
+  width: 100%;
   padding-right: 30px; /* Adjust the padding to account for the button */
 }
 
@@ -78,8 +84,8 @@
 }
 
 .login-btn {
-  width: 100%;
-  padding: 10px;
+  width: 80%; /* Adjusted width */
+  padding: 12px;
   border: none;
   border-radius: 5px;
   background-color: #28a745; /* Green color */
@@ -87,7 +93,7 @@
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-top: 20px;
+  margin: 20px auto 0; /* Center the button */
 }
 
 .login-btn:hover {
