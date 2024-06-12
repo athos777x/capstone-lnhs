@@ -1,4 +1,6 @@
+// StudentsPage.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SearchFilter from '../Utilities/SearchFilter';
 import axios from 'axios';
 import '../CssPage/StudentsPage.css'; // Ensure this import is correct
@@ -14,6 +16,8 @@ function StudentsPage() {
     section: '',
     status: ''
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('http://localhost:3001/students')
@@ -72,13 +76,8 @@ function StudentsPage() {
     applyFilters(filters);
   };
 
-  const handleStudentClick = (studentId) => {
-    setSelectedStudentId(selectedStudentId === studentId ? null : studentId);
-  };
-
   const handleViewButtonClick = (studentId) => {
-    // Placeholder for the View button functionality
-    console.log(`View button clicked for student ID: ${studentId}`);
+    navigate(`/students/${studentId}/details`);
   };
 
   return (
@@ -95,7 +94,7 @@ function StudentsPage() {
         {filteredStudents.map((student, index) => (
           <div key={student.student_id} className="student-item-container">
             <div className="student-item">
-              <p onClick={() => handleStudentClick(student.student_id)}>
+              <p onClick={() => setSelectedStudentId(selectedStudentId === student.student_id ? null : student.student_id)}>
                 {index + 1}. {student.name} (Grade {student.grade_level}) - {student.status}
               </p>
               <button className="view-button" onClick={() => handleViewButtonClick(student.student_id)}>

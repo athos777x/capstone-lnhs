@@ -1,4 +1,5 @@
-import React, { useState } from 'react'; // Removed useEffect from import
+// App.js
+import React, { useState, useEffect } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import StudentDashboard from './RoleDashboard/StudentDashboard';
@@ -21,12 +22,18 @@ import GenerateReportsPage from './Pages/GenerateReportsPage';
 import ListofStudentEnrolleesPage from './Pages/ListofStudentEnrolleesPage';
 import SummaryReportonPromotionPage from './Pages/SummaryReportonPromotionPage';
 import EarlyEnrollmentReportPage from './Pages/EarlyEnrollmentReportPage';
+import StudentDetailPage from './Pages/StudentDetailPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('isAuthenticated') === 'true'
   );
   const [role, setRole] = useState(localStorage.getItem('role') || '');
+
+  useEffect(() => {
+    setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+    setRole(localStorage.getItem('role') || '');
+  }, []);
 
   const handleLogin = (username, password, navigate, userRole) => {
     setIsAuthenticated(true);
@@ -61,6 +68,7 @@ function App() {
             <Route path="/section" element={<SectionPage />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/students" element={<StudentsPage />} />
+            <Route path="/students/:id/details" element={<StudentDetailPage />} />
             <Route path="/grades" element={<GradesPage />} />
             <Route path="/attendance" element={<AttendancePage />} />
             <Route path="/employee" element={<EmployeePage />} />
@@ -73,7 +81,7 @@ function App() {
             <Route path="/early-enrollment-report" element={<EarlyEnrollmentReportPage />} />
           </Route>
         )}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? (role === 'principal' ? '/principal-dashboard' : '/student-dashboard') : '/'} />} />
       </Routes>
     </Router>
   );

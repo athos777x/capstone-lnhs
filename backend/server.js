@@ -93,6 +93,67 @@ app.get('/students/:id/grades', (req, res) => {
   });
 });
 
+// Endpoint to fetch details of a specific student
+app.get('/students/:id', (req, res) => {
+  const studentId = req.params.id;
+  const query = 'SELECT * FROM students WHERE student_id = ?';
+  db.query(query, [studentId], (err, results) => {
+    if (err) {
+      console.error('There was an error fetching the student details!', err);
+      res.status(500).json({ error: 'Failed to fetch student details' });
+      return;
+    }
+    if (results.length > 0) {
+      res.json(results[0]);
+    } else {
+      res.status(404).json({ error: 'Student not found' });
+    }
+  });
+});
+
+// Endpoint to fetch all details of a specific student including grades
+app.get('/students/:id/details', (req, res) => {
+  const studentId = req.params.id;
+
+  // Query to get student information
+  const studentQuery = 'SELECT * FROM students WHERE student_id = ?';
+  
+  // Query to get student's grades
+  const gradesQuery = `
+    SELECT ss.grade, s.subject_name 
+    FROM student_subject_grades ss
+    JOIN subjects s ON ss.subject_id = s.subject_id
+    WHERE ss.student_id = ?
+  `;
+
+  // Execute both queries
+  db.query(studentQuery, [studentId], (err, studentResults) => {
+    if (err) {
+      console.error('There was an error fetching the student details!', err);
+      res.status(500).json({ error: 'Failed to fetch student details' });
+      return;
+    }
+
+    if (studentResults.length === 0) {
+      res.status(404).json({ error: 'Student not found' });
+      return;
+    }
+
+    db.query(gradesQuery, [studentId], (err, gradesResults) => {
+      if (err) {
+        console.error('There was an error fetching the grades!', err);
+        res.status(500).json({ error: 'Failed to fetch grades' });
+        return;
+      }
+
+      const student = studentResults[0];
+      student.grades = gradesResults;
+
+      res.json(student);
+    });
+  });
+});
+
 // Endpoint to fetch the employee list
 app.get('/employees', (req, res) => {
   const query = 'SELECT * FROM employees';

@@ -1,6 +1,6 @@
 // Layout.js
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
 import HeaderBar from './HeadBar';
 import StudentSideBar from './StudentSideBar';
 import PrincipalSideBar from './PrincipalSideBar';
@@ -11,6 +11,10 @@ function Layout({ role, handleLogout }) {
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
+
+  if (!localStorage.getItem('isAuthenticated')) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div>

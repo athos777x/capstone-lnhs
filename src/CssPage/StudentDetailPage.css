@@ -1,0 +1,35 @@
+/* StudentDetailPage.css */
+.student-detail-container {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.student-detail-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.student-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.student-detail-table th, .student-detail-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.student-detail-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.student-detail-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
