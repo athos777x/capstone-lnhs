@@ -54,23 +54,27 @@
 }
 
 .form-group input {
-  width: 75%; /* Adjusted width */
+  width: 80%; /* Consistent width for all inputs */
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  box-sizing: border-box; /* Ensure consistent sizing */
 }
 
 .password-wrapper {
   display: flex;
   align-items: center;
   position: relative;
-  width: 80%; /* Adjusted width to match input */
+  width: 80%; /* Consistent width to match input */
   margin: 0 auto; /* Center the input */
 }
 
 .password-wrapper input {
   width: 100%;
   padding-right: 30px; /* Adjust the padding to account for the button */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box; /* Ensure consistent sizing */
 }
 
 .show-password-btn {
@@ -80,7 +84,6 @@
   border: none;
   cursor: pointer;
   font-size: 16px;
-  margin-left: 10px;
 }
 
 .login-btn {
