@@ -1,6 +1,6 @@
 // StudentDetailPage.js
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -9,6 +9,7 @@ import '../CssPage/StudentDetailPage.css'; // Import the new CSS file
 function StudentDetailPage() {
   const { id } = useParams();
   const [student, setStudent] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`http://localhost:3001/students/${id}/details`)
@@ -37,12 +38,17 @@ function StudentDetailPage() {
       });
   };
 
+  const handleClose = () => {
+    navigate('/students'); // Change this to the desired path
+  };
+
   if (!student) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="student-detail-container">
+      <button onClick={handleClose} className="close-button">Close</button>
       <div id="student-detail-content">
         <h1 className="student-name-header">{student.name}</h1>
         <h2 className="student-detail-title">Student Details</h2>
