@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
+import './CssPage/LoginForm.css'; // Import the new CSS file
 import StudentDashboard from './RoleDashboard/StudentDashboard';
 import PrincipalDashboard from './RoleDashboard/PrincipalDashboard';
 import LoginForm from './Utilities/LoginForm';
