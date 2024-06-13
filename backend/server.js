@@ -50,22 +50,37 @@ app.get('/filters', (req, res) => {
 
   const yearsPromise = new Promise((resolve, reject) => {
     db.query(yearsQuery, (err, results) => {
-      if (err) reject(err);
-      resolve(results.map(row => row.year));
+      if (err) {
+        console.error('Error fetching years:', err);
+        reject(err);
+      } else {
+        console.log('Years results:', results);
+        resolve(results.map(row => row.year));
+      }
     });
   });
 
   const gradesPromise = new Promise((resolve, reject) => {
     db.query(gradesQuery, (err, results) => {
-      if (err) reject(err);
-      resolve(results.map(row => row.grade_level));
+      if (err) {
+        console.error('Error fetching grades:', err);
+        reject(err);
+      } else {
+        console.log('Grades results:', results);
+        resolve(results.map(row => row.grade_level));
+      }
     });
   });
 
   const sectionsPromise = new Promise((resolve, reject) => {
     db.query(sectionsQuery, (err, results) => {
-      if (err) reject(err);
-      resolve(results.map(row => row.section));
+      if (err) {
+        console.error('Error fetching sections:', err);
+        reject(err);
+      } else {
+        console.log('Sections results:', results);
+        resolve(results.map(row => row.section));
+      }
     });
   });
 
