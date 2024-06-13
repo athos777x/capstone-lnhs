@@ -1,4 +1,3 @@
-// StudentDetailPage.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -68,8 +67,8 @@ function StudentDetailPage() {
               <td>{student.phone_number}</td>
             </tr>
             <tr>
-              <th>Year</th>
-              <td>{student.year}</td>
+              <th>School Year</th>
+              <td>{student.school_year}</td>
             </tr>
             <tr>
               <th>Grade</th>

@@ -44,7 +44,7 @@ app.get('/students', (req, res) => {
 
 // Endpoint to fetch filter options
 app.get('/filters', (req, res) => {
-  const yearsQuery = 'SELECT DISTINCT year FROM students';
+  const yearsQuery = 'SELECT DISTINCT school_year_id FROM students';
   const gradesQuery = 'SELECT DISTINCT grade_level FROM students';
   const sectionsQuery = 'SELECT DISTINCT section FROM students';
 
@@ -55,7 +55,7 @@ app.get('/filters', (req, res) => {
         reject(err);
       } else {
         console.log('Years results:', results);
-        resolve(results.map(row => row.year));
+        resolve(results.map(row => row.school_year_id));
       }
     });
   });
@@ -151,15 +151,20 @@ app.get('/students/:id', (req, res) => {
 app.get('/students/:id/details', (req, res) => {
   const studentId = req.params.id;
 
-  // Query to get student information
-  const studentQuery = 'SELECT * FROM students WHERE student_id = ?';
+  // Query to get student information with school year
+  const studentQuery = `
+    SELECT s.*, sy.year AS school_year
+    FROM students s
+    JOIN school_years sy ON s.school_year_id = sy.school_year_id
+    WHERE s.student_id = ?
+  `;
   
   // Query to get student's grades
   const gradesQuery = `
-    SELECT s.subject_name, sg.quarter, sg.grade
-    FROM grades sg
-    JOIN subjects s ON sg.subject_id = s.subject_id
-    WHERE sg.student_id = ?
+    SELECT sub.subject_name, g.quarter, g.grade
+    FROM grades g
+    JOIN subjects sub ON g.subject_id = sub.subject_id
+    WHERE g.student_id = ?
   `;
 
   // Execute both queries
