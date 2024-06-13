@@ -9,7 +9,7 @@
 
 .login-container {
   width: 400px;
-  height: 500px; /* Fixed height to make it more square-like */
+  height: auto;
   padding: 40px 20px;
   background-color: #fff;
   border-radius: 10px;
@@ -17,7 +17,7 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center contents vertically */
+  align-items: center; /* Center align contents */
 }
 
 .login-logo {
