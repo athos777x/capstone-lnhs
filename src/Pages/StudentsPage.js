@@ -24,7 +24,7 @@ function StudentsPage() {
         const sortedStudents = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setStudents(sortedStudents);
         setFilteredStudents(sortedStudents);
-        console.log('Fetched students:', sortedStudents);
+        console.log('Fetched students:', sortedStudents); // Add this line
       })
       .catch(error => {
         console.error('There was an error fetching the students!', error);
@@ -113,8 +113,8 @@ function StudentsPage() {
                       <td>{student.phone_number}</td>
                     </tr>
                     <tr>
-                      <td><strong>Year:</strong></td>
-                      <td>{student.year}</td>
+                      <td><strong>School Year:</strong></td>
+                      <td>{student.school_year}</td>
                     </tr>
                     <tr>
                       <td><strong>Grade:</strong></td>
