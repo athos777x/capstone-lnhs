@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import SearchFilter from '../Utilities/SearchFilter';
 import axios from 'axios';
-import '../CssPage/GradesPage.css'; // Ensure this import is correct
+import '../CssPage/GradesPage.css';
 
 function GradesPage() {
   const [students, setStudents] = useState([]);
@@ -23,7 +23,6 @@ function GradesPage() {
         const sortedStudents = response.data.sort((a, b) => a.name.localeCompare(b.name));
         setStudents(sortedStudents);
         setFilteredStudents(sortedStudents);
-        console.log('Fetched students:', sortedStudents);
       })
       .catch(error => {
         console.error('There was an error fetching the students!', error);
@@ -57,7 +56,6 @@ function GradesPage() {
     }
 
     setFilteredStudents(filtered);
-    console.log('Filtered students:', filtered);
   };
 
   const handleStudentClick = (studentId) => {
@@ -74,7 +72,6 @@ function GradesPage() {
     axios.get(`http://localhost:3001/students/${studentId}/grades`)
       .then(response => {
         setGrades(response.data);
-        console.log('Fetched grades:', response.data);
       })
       .catch(error => {
         console.error('There was an error fetching the grades!', error);
@@ -102,14 +99,20 @@ function GradesPage() {
                   <thead>
                     <tr>
                       <th>Subject</th>
-                      <th>Grade</th>
+                      <th>Q1</th>
+                      <th>Q2</th>
+                      <th>Q3</th>
+                      <th>Q4</th>
                     </tr>
                   </thead>
                   <tbody>
                     {grades.map((grade, index) => (
                       <tr key={index}>
                         <td>{grade.subject_name}</td>
-                        <td>{grade.grade}</td>
+                        <td>{grade.q1_grade}</td>
+                        <td>{grade.q2_grade}</td>
+                        <td>{grade.q3_grade}</td>
+                        <td>{grade.q4_grade}</td>
                       </tr>
                     ))}
                   </tbody>

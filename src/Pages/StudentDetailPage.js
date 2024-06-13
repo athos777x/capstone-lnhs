@@ -14,6 +14,7 @@ function StudentDetailPage() {
   useEffect(() => {
     axios.get(`http://localhost:3001/students/${id}/details`)
       .then(response => {
+        console.log('Student details fetched:', response.data); // Log the student details
         setStudent(response.data);
       })
       .catch(error => {
@@ -90,14 +91,20 @@ function StudentDetailPage() {
             <thead>
               <tr>
                 <th>Subject</th>
-                <th>Grade</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+                <th>Q4</th>
               </tr>
             </thead>
             <tbody>
               {student.grades.map((grade, index) => (
                 <tr key={index}>
                   <td>{grade.subject_name}</td>
-                  <td>{grade.grade}</td>
+                  <td>{grade.q1_grade !== null ? grade.q1_grade : '-'}</td>
+                  <td>{grade.q2_grade !== null ? grade.q2_grade : '-'}</td>
+                  <td>{grade.q3_grade !== null ? grade.q3_grade : '-'}</td>
+                  <td>{grade.q4_grade !== null ? grade.q4_grade : '-'}</td>
                 </tr>
               ))}
             </tbody>

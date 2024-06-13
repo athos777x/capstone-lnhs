@@ -82,14 +82,35 @@ app.get('/filters', (req, res) => {
 app.get('/students/:id/grades', (req, res) => {
   const studentId = req.params.id;
   const query = `
-    SELECT ss.grade, s.subject_name 
-    FROM student_subject_grades ss
-    JOIN subjects s ON ss.subject_id = s.subject_id
-    WHERE ss.student_id = ?
+    SELECT s.subject_name, sg.quarter, sg.grade
+    FROM grades sg
+    JOIN subjects s ON sg.subject_id = s.subject_id
+    WHERE sg.student_id = ?
   `;
   db.query(query, [studentId], (err, results) => {
-    if (err) throw err;
-    res.json(results);
+    if (err) {
+      console.error('There was an error fetching the grades!', err);
+      res.status(500).json({ error: 'Failed to fetch grades' });
+    } else {
+      console.log('Grades fetched:', results);  // Log fetched grades
+      // Restructure the grades to group by subject and quarters
+      const gradesBySubject = {};
+      results.forEach(result => {
+        if (!gradesBySubject[result.subject_name]) {
+          gradesBySubject[result.subject_name] = { q1_grade: null, q2_grade: null, q3_grade: null, q4_grade: null };
+        }
+        gradesBySubject[result.subject_name][`q${result.quarter}_grade`] = result.grade;
+      });
+
+      const formattedGrades = Object.keys(gradesBySubject).map(subject => ({
+        subject_name: subject,
+        ...gradesBySubject[subject]
+      }));
+
+      console.log('Formatted grades:', formattedGrades);  // Log formatted grades
+
+      res.json(formattedGrades);
+    }
   });
 });
 
@@ -120,10 +141,10 @@ app.get('/students/:id/details', (req, res) => {
   
   // Query to get student's grades
   const gradesQuery = `
-    SELECT ss.grade, s.subject_name 
-    FROM student_subject_grades ss
-    JOIN subjects s ON ss.subject_id = s.subject_id
-    WHERE ss.student_id = ?
+    SELECT s.subject_name, sg.quarter, sg.grade
+    FROM grades sg
+    JOIN subjects s ON sg.subject_id = s.subject_id
+    WHERE sg.student_id = ?
   `;
 
   // Execute both queries
@@ -146,8 +167,26 @@ app.get('/students/:id/details', (req, res) => {
         return;
       }
 
+      console.log('Grades fetched:', gradesResults);  // Log fetched grades
+
+      // Restructure the grades to group by subject and quarters
+      const gradesBySubject = {};
+      gradesResults.forEach(result => {
+        if (!gradesBySubject[result.subject_name]) {
+          gradesBySubject[result.subject_name] = { q1_grade: null, q2_grade: null, q3_grade: null, q4_grade: null };
+        }
+        gradesBySubject[result.subject_name][`q${result.quarter}_grade`] = result.grade;
+      });
+
+      const formattedGrades = Object.keys(gradesBySubject).map(subject => ({
+        subject_name: subject,
+        ...gradesBySubject[subject]
+      }));
+
+      console.log('Formatted grades:', formattedGrades);  // Log formatted grades
+
       const student = studentResults[0];
-      student.grades = gradesResults;
+      student.grades = formattedGrades;
 
       res.json(student);
     });
@@ -185,12 +224,4 @@ app.get('/employees/departments', (req, res) => {
 
 app.listen(3001, () => {
   console.log('Server running on port 3001');
-});
-
-app.get('/students', (req, res) => {
-  const query = 'SELECT * FROM students';
-  db.query(query, (err, results) => {
-    if (err) throw err;
-    res.json(results);
-  });
 });
