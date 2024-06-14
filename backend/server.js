@@ -97,38 +97,35 @@ app.get('/filters', (req, res) => {
     });
 });
 
-// Endpoint to fetch grades for a specific student
+// Endpoint to fetch subjects based on grade level
+app.get('/subjects/:gradeLevel', (req, res) => {
+  const gradeLevel = req.params.gradeLevel;
+  const query = 'SELECT * FROM subjects WHERE grade_level = ?';
+  db.query(query, [gradeLevel], (err, results) => {
+    if (err) {
+      console.error('There was an error fetching the subjects!', err);
+      res.status(500).json({ error: 'Failed to fetch subjects' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Endpoint to fetch grades for a specific student including subject info based on grade level
 app.get('/students/:id/grades', (req, res) => {
   const studentId = req.params.id;
   const query = `
-    SELECT s.subject_name, sg.quarter, sg.grade
-    FROM grades sg
-    JOIN subjects s ON sg.subject_id = s.subject_id
-    WHERE sg.student_id = ?
+    SELECT s.subject_name, s.grade_level, g.q1_grade, g.q2_grade, g.q3_grade, g.q4_grade
+    FROM grades g
+    JOIN subjects s ON g.subject_id = s.subject_id
+    WHERE g.student_id = ?
   `;
   db.query(query, [studentId], (err, results) => {
     if (err) {
       console.error('There was an error fetching the grades!', err);
       res.status(500).json({ error: 'Failed to fetch grades' });
     } else {
-      console.log('Grades fetched:', results);  // Log fetched grades
-      // Restructure the grades to group by subject and quarters
-      const gradesBySubject = {};
-      results.forEach(result => {
-        if (!gradesBySubject[result.subject_name]) {
-          gradesBySubject[result.subject_name] = { q1_grade: null, q2_grade: null, q3_grade: null, q4_grade: null };
-        }
-        gradesBySubject[result.subject_name][`q${result.quarter}_grade`] = result.grade;
-      });
-
-      const formattedGrades = Object.keys(gradesBySubject).map(subject => ({
-        subject_name: subject,
-        ...gradesBySubject[subject]
-      }));
-
-      console.log('Formatted grades:', formattedGrades);  // Log formatted grades
-
-      res.json(formattedGrades);
+      res.json(results);
     }
   });
 });
@@ -165,7 +162,7 @@ app.get('/students/:id/details', (req, res) => {
   
   // Query to get student's grades
   const gradesQuery = `
-    SELECT sub.subject_name, g.quarter, g.grade
+    SELECT sub.subject_name, g.q1_grade, g.q2_grade, g.q3_grade, g.q4_grade
     FROM grades g
     JOIN subjects sub ON g.subject_id = sub.subject_id
     WHERE g.student_id = ?
@@ -199,7 +196,10 @@ app.get('/students/:id/details', (req, res) => {
         if (!gradesBySubject[result.subject_name]) {
           gradesBySubject[result.subject_name] = { q1_grade: null, q2_grade: null, q3_grade: null, q4_grade: null };
         }
-        gradesBySubject[result.subject_name][`q${result.quarter}_grade`] = result.grade;
+        gradesBySubject[result.subject_name].q1_grade = result.q1_grade;
+        gradesBySubject[result.subject_name].q2_grade = result.q2_grade;
+        gradesBySubject[result.subject_name].q3_grade = result.q3_grade;
+        gradesBySubject[result.subject_name].q4_grade = result.q4_grade;
       });
 
       const formattedGrades = Object.keys(gradesBySubject).map(subject => ({
