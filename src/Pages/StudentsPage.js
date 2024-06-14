@@ -10,7 +10,7 @@ function StudentsPage() {
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [filters, setFilters] = useState({
     searchTerm: '',
-    year: '',
+    school_year: '',
     grade: '',
     section: '',
     status: ''
@@ -49,8 +49,8 @@ function StudentsPage() {
   const applyFilters = (updatedFilters) => {
     let filtered = students;
 
-    if (updatedFilters.year) {
-      filtered = filtered.filter(student => String(student.year) === updatedFilters.year);
+    if (updatedFilters.school_year) {
+      filtered = filtered.filter(student => String(student.school_year) === updatedFilters.school_year);
     }
     if (updatedFilters.grade) {
       filtered = filtered.filter(student => student.grade_level === updatedFilters.grade);

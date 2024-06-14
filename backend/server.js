@@ -48,18 +48,18 @@ app.get('/students', (req, res) => {
 
 // Endpoint to fetch filter options
 app.get('/filters', (req, res) => {
-  const yearsQuery = 'SELECT DISTINCT school_year_id FROM students';
+  const schoolYearsQuery = 'SELECT school_year_id, year FROM school_years';
   const gradesQuery = 'SELECT DISTINCT grade_level FROM students';
   const sectionsQuery = 'SELECT DISTINCT section FROM students';
 
-  const yearsPromise = new Promise((resolve, reject) => {
-    db.query(yearsQuery, (err, results) => {
+  const schoolYearsPromise = new Promise((resolve, reject) => {
+    db.query(schoolYearsQuery, (err, results) => {
       if (err) {
-        console.error('Error fetching years:', err);
+        console.error('Error fetching school years:', err);
         reject(err);
       } else {
-        console.log('Years results:', results);
-        resolve(results.map(row => row.school_year_id));
+        console.log('School Years results:', results);
+        resolve(results);
       }
     });
   });
@@ -88,9 +88,9 @@ app.get('/filters', (req, res) => {
     });
   });
 
-  Promise.all([yearsPromise, gradesPromise, sectionsPromise])
-    .then(([years, grades, sections]) => {
-      res.json({ years, grades, sections });
+  Promise.all([schoolYearsPromise, gradesPromise, sectionsPromise])
+    .then(([schoolYears, grades, sections]) => {
+      res.json({ schoolYears, grades, sections });
     })
     .catch(err => {
       res.status(500).json({ error: 'Failed to fetch filter options' });

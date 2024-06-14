@@ -5,20 +5,20 @@ import axios from 'axios';
 // Search and Filter Component
 function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedSchoolYear, setSelectedSchoolYear] = useState('');
   const [selectedGrade, setSelectedGrade] = useState('');
   const [selectedSection, setSelectedSection] = useState('');
 
-  const [years, setYears] = useState([]);
+  const [schoolYears, setSchoolYears] = useState([]);
   const [grades, setGrades] = useState([]);
   const [sections, setSections] = useState([]);
 
   useEffect(() => {
-    // Fetch years, grades, and sections from the server
+    // Fetch school years, grades, and sections from the server
     axios.get('http://localhost:3001/filters')
       .then(response => {
         console.log(response.data); // Verify the received data
-        setYears(response.data.years);
+        setSchoolYears(response.data.schoolYears);
         setGrades(response.data.grades);
         setSections(response.data.sections);
       })
@@ -33,10 +33,10 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
     handleSearch(value);
   };
 
-  const handleYearChange = (event) => {
+  const handleSchoolYearChange = (event) => {
     const value = event.target.value;
-    setSelectedYear(value);
-    handleFilter('year', value);
+    setSelectedSchoolYear(value);
+    handleFilter('school_year', value);
   };
 
   const handleGradeChange = (event) => {
@@ -60,11 +60,11 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
         onChange={handleSearchChange}
       />
       <div>
-        <label htmlFor="year">Year:</label>
-        <select id="year" value={selectedYear} onChange={handleYearChange}>
-          <option value="">Select Year</option>
-          {years.map(year => (
-            <option key={year} value={year}>{year}</option>
+        <label htmlFor="schoolYear">School Year:</label>
+        <select id="schoolYear" value={selectedSchoolYear} onChange={handleSchoolYearChange}>
+          <option value="">Select School Year</option>
+          {schoolYears.map(schoolYear => (
+            <option key={schoolYear.school_year_id} value={schoolYear.year}>{schoolYear.year}</option>
           ))}
         </select>
       </div>
