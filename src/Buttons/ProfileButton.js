@@ -1,5 +1,6 @@
 // ProfileButton.js
 import React from 'react';
+import { FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 function ProfileButton() {
@@ -10,7 +11,9 @@ function ProfileButton() {
   };
 
   return (
-    <button onClick={handleShowProfile}>My Profile</button>
+    <button onClick={handleShowProfile}>
+      <FaUser className="icon" /> My Profile
+    </button>
   );
 }
 

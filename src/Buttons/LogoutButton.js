@@ -1,16 +1,20 @@
 // LogoutButton.js
 import React from 'react';
+import { FiLogOut } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
-function LogoutButton() {
+function LogoutButton({ onClick }) {
   const navigate = useNavigate();
-  
+
   const handleLogout = () => {
-    navigate('/');
+    onClick();
+    navigate('/login');
   };
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <button onClick={handleLogout} className="logout-btn">
+      <FiLogOut className="icon" /> Logout
+    </button>
   );
 }
 

@@ -1,5 +1,6 @@
 // AcademicRecordButton.js
 import React from 'react';
+import { FaBook } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 function AcademicRecordButton() {
@@ -10,7 +11,9 @@ function AcademicRecordButton() {
   };
 
   return (
-    <button onClick={handleShowAcademicRecord}>Student Academic Record</button>
+    <button onClick={handleShowAcademicRecord}>
+      <FaBook className="icon" /> Academic Record
+    </button>
   );
 }
 
