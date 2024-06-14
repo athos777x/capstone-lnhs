@@ -16,7 +16,7 @@
   border-radius: 8px;
   height: 40px; /* Ensure consistent height */
   box-sizing: border-box; /* Ensure padding is included in height calculation */
-  width: 200px; /* Set a longer width for the search box */
+  width: 300px; /* Set a longer width for the search box */
 }
 
 .search-filter .filter-select {
@@ -30,7 +30,7 @@
 }
 
 .search-filter .filter-button {
-  padding: 8px 16px; /* Reduced padding for smaller width */
+  padding: 8px 12px; /* Reduced padding for smaller width */
   background-color: #28a745; /* Changed color when not hovered */
   color: white;
   border: none;
@@ -50,18 +50,6 @@
 
 /* Custom styles for the select dropdown highlighted option */
 .search-filter .filter-select option:checked {
-  background-color: #218838; /* Same color as the hovered apply filter button */
+  background-color: #28a745; /* Same color as the hovered apply filter button */
   color: white; /* Ensure the text is readable */
-}
-
-/* Custom styles for the select dropdown highlighted option for all browsers */
-.search-filter .filter-select option {
-  background-color: #ffffff; /* Default background */
-  color: black; /* Default color */
-}
-
-/* For mouse hover effect on options in the dropdown */
-.search-filter .filter-select option:hover {
-  background-color: #218838 !important; /* Same color as the hovered apply filter button */
-  color: white !important; /* Ensure the text is readable */
 }
