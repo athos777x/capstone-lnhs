@@ -58,35 +58,27 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
         placeholder="Search by name..."
         value={searchTerm}
         onChange={handleSearchChange}
+        className="filter-input"
       />
-      <div>
-        <label htmlFor="schoolYear">School Year:</label>
-        <select id="schoolYear" value={selectedSchoolYear} onChange={handleSchoolYearChange}>
-          <option value="">Select School Year</option>
-          {schoolYears.map(schoolYear => (
-            <option key={schoolYear.school_year_id} value={schoolYear.year}>{schoolYear.year}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="grade">Grade:</label>
-        <select id="grade" value={selectedGrade} onChange={handleGradeChange}>
-          <option value="">Select Grade</option>
-          {grades.map(grade => (
-            <option key={grade} value={grade}>{grade}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="section">Section:</label>
-        <select id="section" value={selectedSection} onChange={handleSectionChange}>
-          <option value="">Select Section</option>
-          {sections.map(section => (
-            <option key={section} value={section}>{section}</option>
-          ))}
-        </select>
-      </div>
-      <button onClick={handleApplyFilters}>Apply Filters</button>
+      <select id="schoolYear" value={selectedSchoolYear} onChange={handleSchoolYearChange} className="filter-select">
+        <option value="">Select School Year</option>
+        {schoolYears.map(schoolYear => (
+          <option key={schoolYear.school_year_id} value={schoolYear.year}>{schoolYear.year}</option>
+        ))}
+      </select>
+      <select id="grade" value={selectedGrade} onChange={handleGradeChange} className="filter-select">
+        <option value="">Select Grade</option>
+        {grades.map(grade => (
+          <option key={grade} value={grade}>{grade}</option>
+        ))}
+      </select>
+      <select id="section" value={selectedSection} onChange={handleSectionChange} className="filter-select">
+        <option value="">Select Section</option>
+        {sections.map(section => (
+          <option key={section} value={section}>{section}</option>
+        ))}
+      </select>
+      <button onClick={handleApplyFilters} className="filter-button">Apply Filters</button>
     </div>
   );
 }
