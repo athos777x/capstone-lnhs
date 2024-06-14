@@ -47,14 +47,14 @@
   margin-left: 20px;
   padding: 5px 10px;
   border: none;
-  background-color: #007bff;
+  background-color: #28a745; /* Same color as the Apply Filters button */
   color: white;
   cursor: pointer;
   border-radius: 5px;
 }
 
 .view-button:hover {
-  background-color: #0056b3;
+  background-color: #218838; /* Same hover color as the Apply Filters button */
 }
 
 .student-details {
