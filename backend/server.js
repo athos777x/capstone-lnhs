@@ -35,7 +35,11 @@ app.post('/login', (req, res) => {
 
 // Endpoint to fetch all students
 app.get('/students', (req, res) => {
-  const query = 'SELECT * FROM students';
+  const query = `
+    SELECT s.*, sy.year AS school_year
+    FROM students s
+    JOIN school_years sy ON s.school_year_id = sy.school_year_id
+  `;
   db.query(query, (err, results) => {
     if (err) throw err;
     res.json(results);
