@@ -8,7 +8,6 @@ function GradesPage() {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [grades, setGrades] = useState([]);
-
   const [filters, setFilters] = useState({
     searchTerm: '',
     grade: '',
@@ -17,110 +16,150 @@ function GradesPage() {
   });
 
   useEffect(() => {
-    axios.get('http://localhost:3001/students')
-      .then(response => {
-        const sortedStudents = response.data.sort((a, b) => a.name.localeCompare(b.name));
-        setStudents(sortedStudents);
-        setFilteredStudents(sortedStudents);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the students!', error);
-      });
+    fetchStudents();
   }, []);
 
+  const fetchStudents = async (appliedFilters = {}) => {
+    try {
+      const response = await axios.get('http://localhost:3001/students', {
+        params: appliedFilters
+      });
+      const sortedStudents = response.data.sort((a, b) => a.lastname.localeCompare(b.lastname));
+      setStudents(sortedStudents);
+      setFilteredStudents(sortedStudents);
+      console.log('Fetched students:', sortedStudents);
+    } catch (error) {
+      console.error('There was an error fetching the students!', error);
+    }
+  };
+
   const handleSearch = (searchTerm) => {
-    setFilters(prevFilters => ({ ...prevFilters, searchTerm }));
+    setFilters(prevFilters => {
+      const updatedFilters = { ...prevFilters, searchTerm };
+      applyFilters(updatedFilters);
+      return updatedFilters;
+    });
   };
 
   const handleFilterChange = (type, value) => {
-    setFilters(prevFilters => ({ ...prevFilters, [type]: value }));
+    setFilters(prevFilters => {
+      const updatedFilters = { ...prevFilters, [type]: value };
+      return updatedFilters;
+    });
   };
 
-  const handleApplyFilters = () => {
+  const applyFilters = (updatedFilters) => {
     let filtered = students;
 
-    if (filters.grade) {
-      filtered = filtered.filter(student => student.grade_level === filters.grade);
+    if (updatedFilters.school_year) {
+      filtered = filtered.filter(student => String(student.school_year) === updatedFilters.school_year);
     }
-    if (filters.section) {
-      filtered = filtered.filter(student => student.section === filters.section);
+    if (updatedFilters.grade) {
+      filtered = filtered.filter(student => student.current_yr_lvl === updatedFilters.grade);
     }
-    if (filters.school_year) {
-      filtered = filtered.filter(student => student.school_year === filters.school_year);
+    if (updatedFilters.section) {
+      filtered = filtered.filter(student => student.section_id == updatedFilters.section);
     }
-    if (filters.searchTerm) {
+    if (updatedFilters.searchTerm) {
       filtered = filtered.filter(student =>
-        student.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+        student.lastname.toLowerCase().includes(updatedFilters.searchTerm.toLowerCase()) ||
+        student.firstname.toLowerCase().includes(updatedFilters.searchTerm.toLowerCase())
       );
     }
 
     setFilteredStudents(filtered);
+    console.log('Filtered students:', filtered);
   };
 
-  const handleStudentClick = (studentId, gradeLevel) => {
+  const handleApplyFilters = () => {
+    console.log('Applying filters:', filters);
+    fetchStudents(filters);
+  };
+
+  const handleStudentClick = (studentId) => {
     if (selectedStudentId === studentId) {
       setSelectedStudentId(null);
       setGrades([]);
     } else {
       setSelectedStudentId(studentId);
-      fetchStudentGrades(studentId, gradeLevel);
+      fetchStudentGrades(studentId);
     }
   };
 
-  const fetchStudentGrades = (studentId, gradeLevel) => {
+  const fetchStudentGrades = (studentId) => {
     axios.get(`http://localhost:3001/students/${studentId}/grades`)
       .then(response => {
-        setGrades(response.data.filter(grade => grade.grade_level === gradeLevel));
+        setGrades(response.data);
       })
       .catch(error => {
         console.error('There was an error fetching the grades!', error);
       });
   };
 
+  const calculateFinalGrade = (grades) => {
+    const total = grades.reduce((sum, grade) => sum + grade, 0);
+    return (total / grades.length).toFixed(2);
+  };
+
   return (
     <div className="grades-container">
       <h1 className="grades-title">Grades</h1>
-      <div className="search-filter-container">
+      <div className="grades-search-filter-container">
         <SearchFilter
           handleSearch={handleSearch}
           handleFilter={handleFilterChange}
           handleApplyFilters={handleApplyFilters}
         />
       </div>
-      <div>
+      <ul className="grades-list">
         {filteredStudents.map((student, index) => (
-          <div key={student.student_id} className="student-item" onClick={() => handleStudentClick(student.student_id, student.grade_level)}>
-            <p>{index + 1}. {student.name}</p>
+          <li key={student.student_id} className="grades-student-item-container" onClick={() => handleStudentClick(student.student_id)}>
+            <div className="grades-student-item">
+              <p className="grades-student-name">{index + 1}. {student.firstname} {student.middlename} {student.lastname}</p>
+              <p className="grades-student-info">Grade {student.current_yr_lvl} - {student.active_status}</p>
+              <button className="grades-view-button">View</button>
+            </div>
             {selectedStudentId === student.student_id && (
-              <div className="grades-details">
-                <h2>Grades</h2>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Subject</th>
-                      <th>Q1</th>
-                      <th>Q2</th>
-                      <th>Q3</th>
-                      <th>Q4</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {grades.map((grade, index) => (
-                      <tr key={index}>
-                        <td>{grade.subject_name}</td>
-                        <td>{grade.q1_grade}</td>
-                        <td>{grade.q2_grade}</td>
-                        <td>{grade.q3_grade}</td>
-                        <td>{grade.q4_grade}</td>
+              <div className="grades-student-details">
+                {grades.length > 0 && (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th colSpan="6" style={{ textAlign: 'left' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: '40px' }}>
+                            <span>Grade Level: {grades[0].grade_level}</span>
+                            <span>School Year: {grades[0].school_year}</span>
+                          </div>
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                      <tr>
+                        <th>Subject</th>
+                        <th>Q1</th>
+                        <th>Q2</th>
+                        <th>Q3</th>
+                        <th>Q4</th>
+                        <th>Final Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {grades.map((grade, index) => (
+                        <tr key={index}>
+                          <td>{grade.subject_name}</td>
+                          <td>{grade.q1_grade}</td>
+                          <td>{grade.q2_grade}</td>
+                          <td>{grade.q3_grade}</td>
+                          <td>{grade.q4_grade}</td>
+                          <td>{calculateFinalGrade([grade.q1_grade, grade.q2_grade, grade.q3_grade, grade.q4_grade])}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }

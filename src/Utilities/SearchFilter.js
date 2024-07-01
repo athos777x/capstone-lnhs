@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import '../CssFiles/searchfilter.css';
 import axios from 'axios';
 
-// Search and Filter Component
 function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSchoolYear, setSelectedSchoolYear] = useState('');
@@ -10,20 +9,24 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
   const [selectedSection, setSelectedSection] = useState('');
 
   const [schoolYears, setSchoolYears] = useState([]);
-  const [grades, setGrades] = useState([]);
+  const [grades, setGrades] = useState(['7', '8', '9', '10']); // Example grades
   const [sections, setSections] = useState([]);
 
   useEffect(() => {
-    // Fetch school years, grades, and sections from the server
-    axios.get('http://localhost:3001/filters')
+    axios.get('http://localhost:3001/api/school_years')
       .then(response => {
-        console.log(response.data); // Verify the received data
-        setSchoolYears(response.data.schoolYears);
-        setGrades(response.data.grades);
-        setSections(response.data.sections);
+        setSchoolYears(response.data);
       })
       .catch(error => {
-        console.error('There was an error fetching the filter options!', error);
+        console.error('There was an error fetching the school years!', error);
+      });
+
+    axios.get('http://localhost:3001/api/sections')
+      .then(response => {
+        setSections(response.data);
+      })
+      .catch(error => {
+        console.error('There was an error fetching the sections!', error);
       });
   }, []);
 
@@ -51,6 +54,17 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
     handleFilter('section', value);
   };
 
+  const applyFilters = () => {
+    const filters = {
+      searchTerm,
+      school_year: selectedSchoolYear,
+      grade: selectedGrade,
+      section: selectedSection
+    };
+    console.log('Applying filters:', filters);
+    handleApplyFilters(filters);
+  };
+
   return (
     <div className="search-filter">
       <input
@@ -62,23 +76,23 @@ function SearchFilter({ handleSearch, handleFilter, handleApplyFilters }) {
       />
       <select id="schoolYear" value={selectedSchoolYear} onChange={handleSchoolYearChange} className="filter-select">
         <option value="">Select School Year</option>
-        {schoolYears.map(schoolYear => (
-          <option key={schoolYear.school_year_id} value={schoolYear.year}>{schoolYear.year}</option>
+        {schoolYears.map((schoolYear, index) => (
+          <option key={index} value={schoolYear.school_year}>{schoolYear.school_year}</option>
         ))}
       </select>
       <select id="grade" value={selectedGrade} onChange={handleGradeChange} className="filter-select">
         <option value="">Select Grade</option>
-        {grades.map(grade => (
-          <option key={grade} value={grade}>{grade}</option>
+        {grades.map((grade, index) => (
+          <option key={index} value={grade}>{grade}</option>
         ))}
       </select>
       <select id="section" value={selectedSection} onChange={handleSectionChange} className="filter-select">
         <option value="">Select Section</option>
         {sections.map(section => (
-          <option key={section} value={section}>{section}</option>
+          <option key={section.section_id} value={section.section_id}>{section.section_name}</option>
         ))}
       </select>
-      <button onClick={handleApplyFilters} className="filter-button">Apply Filters</button>
+      <button onClick={applyFilters} className="filter-button">Apply Filters</button>
     </div>
   );
 }

@@ -1,56 +1,82 @@
-// AttendancePage.js
 import React, { useState, useEffect } from 'react';
 import SearchFilter from '../Utilities/SearchFilter';
 import axios from 'axios';
-import '../CssPage/AttendancePage.css'; // Ensure you create and import the correct CSS file
+import '../CssPage/AttendancePage.css';
 
 function AttendancePage() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [attendanceData, setAttendanceData] = useState({});
   const [filters, setFilters] = useState({
-    year: '',
+    searchTerm: '',
     grade: '',
     section: '',
-    searchTerm: ''
+    school_year: ''
   });
 
   useEffect(() => {
-    axios.get('http://localhost:3001/students')
-      .then(response => {
-        const sortedStudents = response.data.sort((a, b) => a.name.localeCompare(b.name));
-        setStudents(sortedStudents);
-        setFilteredStudents(sortedStudents);
-        console.log('Fetched students:', sortedStudents);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the students!', error);
-      });
+    fetchStudents();
   }, []);
 
+  const fetchStudents = async (appliedFilters = {}) => {
+    try {
+      const response = await axios.get('http://localhost:3001/students', {
+        params: appliedFilters
+      });
+      const sortedStudents = response.data.sort((a, b) => a.lastname.localeCompare(b.lastname));
+      setStudents(sortedStudents);
+      setFilteredStudents(sortedStudents);
+      console.log('Students fetched:', sortedStudents);
+    } catch (error) {
+      console.error('There was an error fetching the students!', error);
+    }
+  };
+
+  const fetchAttendanceData = async (studentId) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/attendance/${studentId}`);
+      console.log('Attendance data fetched for student', studentId, response.data);
+      setAttendanceData(prevData => ({
+        ...prevData,
+        [studentId]: response.data
+      }));
+    } catch (error) {
+      console.error('There was an error fetching the attendance data!', error);
+    }
+  };
+
   const handleSearch = (searchTerm) => {
-    setFilters(prevFilters => ({ ...prevFilters, searchTerm }));
+    setFilters(prevFilters => {
+      const updatedFilters = { ...prevFilters, searchTerm };
+      applyFilters(updatedFilters);
+      return updatedFilters;
+    });
   };
 
   const handleFilterChange = (type, value) => {
-    setFilters(prevFilters => ({ ...prevFilters, [type]: value }));
+    setFilters(prevFilters => {
+      const updatedFilters = { ...prevFilters, [type]: value };
+      return updatedFilters;
+    });
   };
 
-  const handleApplyFilters = () => {
+  const applyFilters = (updatedFilters) => {
     let filtered = students;
 
-    if (filters.year) {
-      filtered = filtered.filter(student => String(student.year) === filters.year);
+    if (updatedFilters.school_year) {
+      filtered = filtered.filter(student => String(student.school_year) === updatedFilters.school_year);
     }
-    if (filters.grade) {
-      filtered = filtered.filter(student => student.grade === filters.grade);
+    if (updatedFilters.grade) {
+      filtered = filtered.filter(student => student.current_yr_lvl === updatedFilters.grade);
     }
-    if (filters.section) {
-      filtered = filtered.filter(student => student.section === filters.section);
+    if (updatedFilters.section) {
+      filtered = filtered.filter(student => student.section_id == updatedFilters.section);
     }
-    if (filters.searchTerm) {
+    if (updatedFilters.searchTerm) {
       filtered = filtered.filter(student =>
-        student.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+        student.lastname.toLowerCase().includes(updatedFilters.searchTerm.toLowerCase()) ||
+        student.firstname.toLowerCase().includes(updatedFilters.searchTerm.toLowerCase())
       );
     }
 
@@ -58,44 +84,80 @@ function AttendancePage() {
     console.log('Filtered students:', filtered);
   };
 
-  const handleStudentClick = (studentId) => {
+  const handleApplyFilters = () => {
+    console.log('Applying filters:', filters);
+    fetchStudents(filters);
+  };
+
+  const handleStudentClick = async (studentId) => {
+    console.log('Student clicked:', studentId);
+    if (!attendanceData[studentId]) {
+      await fetchAttendanceData(studentId);
+    }
     setSelectedStudentId(selectedStudentId === studentId ? null : studentId);
   };
 
   return (
     <div className="attendance-container">
       <h1 className="attendance-title">Attendance</h1>
-      <div className="search-filter-container">
+      <div className="attendance-search-filter-container">
         <SearchFilter
           handleSearch={handleSearch}
           handleFilter={handleFilterChange}
           handleApplyFilters={handleApplyFilters}
         />
       </div>
-      <div>
+      <ul className="attendance-list">
         {filteredStudents.map((student, index) => (
-          <div 
-            key={student.id} 
-            className="student-item" 
-            onClick={() => handleStudentClick(student.id)}
-          >
-            <p>{index + 1}. {student.name}</p>
-            {selectedStudentId === student.id && (
-              <div className="student-details">
-                <p><strong>Name:</strong> {student.name}</p>
-                <p><strong>Address:</strong> {student.address}</p>
-                <p><strong>Phone Number:</strong> {student.phone_number}</p>
-                <p><strong>Year:</strong> {student.year}</p>
-                <p><strong>Grade:</strong> {student.grade}</p>
-                <p><strong>Section:</strong> {student.section}</p>
+          <li key={student.student_id} className="attendance-student-item-container" onClick={() => handleStudentClick(student.student_id)}>
+            <div className="attendance-student-item">
+              <p className="attendance-student-name">{index + 1}. {student.firstname} {student.middlename} {student.lastname}</p>
+              <p className="attendance-student-info">Grade {student.current_yr_lvl} - {student.active_status}</p>
+              <button className="attendance-view-button">View</button>
+            </div>
+            {selectedStudentId === student.student_id && attendanceData[student.student_id] && (
+              <div className="attendance-student-details">
+                <table className="attendance-table">
+                  <thead>
+                    <tr>
+                      <th colSpan="2" style={{ textAlign: 'left' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: '40px' }}>
+                          <span>Grade Level: {attendanceData[student.student_id].grade_level}</span>
+                          <span>School Year: {attendanceData[student.student_id].school_year}</span>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>Total School Days</th>
+                      <td>{attendanceData[student.student_id].total_school_days}</td>
+                    </tr>
+                    <tr>
+                      <th>Total Days Present</th>
+                      <td>{attendanceData[student.student_id].days_present}</td>
+                    </tr>
+                    <tr>
+                      <th>Total Days Absent</th>
+                      <td>{attendanceData[student.student_id].days_absent}</td>
+                    </tr>
+                    <tr>
+                      <th>Total Days Late</th>
+                      <td>{attendanceData[student.student_id].days_late}</td>
+                    </tr>
+                    <tr>
+                      <th>Brigada Attendance</th>
+                      <td>{attendanceData[student.student_id].brigada_attendance}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
 
 export default AttendancePage;
-
