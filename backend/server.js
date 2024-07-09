@@ -131,6 +131,8 @@ app.get('/students', (req, res) => {
     query += (school_year ? ' AND ' : ' WHERE ') + conditions.join(' AND ');
   }
 
+  query += ' ORDER BY s.firstname'; // Add ORDER BY clause to sort by first name
+
   console.log('Final query:', query);
   console.log('With parameters:', queryParams);
 
@@ -164,7 +166,7 @@ app.get('/students/:student_id/grades', (req, res) => {
   });
 });
 
-// Endpoint to fetch sections
+// Endpoint to fetch sections for select section filter for StudentsPage, GradesPage, and AttendancePage
 app.get('/api/sections', (req, res) => {
   const query = 'SELECT section_id, section_name FROM section';
   db.query(query, (err, results) => {
@@ -174,6 +176,32 @@ app.get('/api/sections', (req, res) => {
       return;
     }
     res.json(results);
+  });
+});
+
+// Endpoint to fetch positions
+app.get('/api/positions', (req, res) => {
+  const query = 'SELECT DISTINCT role_name FROM employee';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching positions:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(results.map(role => role.role_name));
+  });
+});
+
+// Endpoint to fetch departments
+app.get('/api/departments', (req, res) => {
+  const query = 'SELECT DISTINCT department FROM employee';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching departments:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(results.map(department => department.department));
   });
 });
 
@@ -257,6 +285,16 @@ app.get('/api/school_years', (req, res) => {
   });
 });
 
+// Endpoint to fetch the current school year
+app.get('/current-school-year', (req, res) => {
+  try {
+    const currentSchoolYear = '2023-2024'; // Replace with actual logic to fetch from database
+    res.json({ schoolYear: currentSchoolYear });
+  } catch (error) {
+    res.status(500).send('Error fetching current school year');
+  }
+});
+
 // Endpoint to fetch student details
 app.get('/students/:id/details', (req, res) => {
   const studentId = req.params.id;
@@ -312,6 +350,320 @@ app.get('/students/:id/details', (req, res) => {
     }));
 
     res.json(studentDetails);
+  });
+});
+
+// Endpoint to fetch all employees
+app.get('/employees', (req, res) => {
+  const { status, position, department, searchTerm, showArchive } = req.query;
+
+  let query = 'SELECT * FROM employee WHERE 1=1';
+  const queryParams = [];
+
+  if (status === 'showAll') {
+    // Show all employees, including archived ones
+  } else if (status) {
+    // Filter by status and exclude archived employees
+    query += ' AND status = ?';
+    queryParams.push(status);
+  }
+
+  if (showArchive === 'archive') {
+    query += ' AND archive_status = "archive"';
+  } else if (showArchive === 'unarchive') {
+    query += ' AND archive_status = "unarchive"';
+  }
+
+  if (position) {
+    const formattedPosition = position.replace(/\s/g, '_').toLowerCase();
+    query += ' AND role_name = ?';
+    queryParams.push(formattedPosition);
+  }
+
+  if (department) {
+    query += ' AND department = ?';
+    queryParams.push(department);
+  }
+
+  if (searchTerm) {
+    query += ' AND (firstname LIKE ? OR lastname LIKE ?)';
+    queryParams.push(`%${searchTerm}%`, `%${searchTerm}%`);
+  }
+
+  query += ' ORDER BY firstname';
+
+  console.log('Final query:', query);
+  console.log('With parameters:', queryParams);
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error fetching employees:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// Endpoint to fetch employee details by ID
+app.get('/employees/:employeeId', (req, res) => {
+  const { employeeId } = req.params;
+  const query = 'SELECT * FROM employee WHERE employee_id = ?';
+  db.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error('Error fetching employee details:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.length > 0) {
+      res.json(results[0]);
+    } else {
+      res.status(404).json({ error: 'Employee not found' });
+    }
+  });
+});
+
+// Endpoint to update employee details by ID
+app.put('/employees/:employeeId', (req, res) => {
+  const { employeeId } = req.params;
+  const updatedEmployee = req.body;
+
+  console.log(`Updating employee with ID: ${employeeId}`, updatedEmployee);
+
+  // Fetch the role_id based on the role_name
+  const roleQuery = 'SELECT role_id FROM roles WHERE role_name = ?';
+  db.query(roleQuery, [updatedEmployee.role_name], (err, roleResults) => {
+    if (err) {
+      console.error('Error fetching role ID:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    if (roleResults.length > 0) {
+      const roleId = roleResults[0].role_id;
+      updatedEmployee.role_id = roleId;
+
+      console.log('Role ID fetched:', roleId);
+
+      const query = 'UPDATE employee SET ? WHERE employee_id = ?';
+      db.query(query, [updatedEmployee, employeeId], (err, results) => {
+        if (err) {
+          console.error('Error updating employee details:', err);
+          res.status(500).json({ error: 'Internal server error' });
+          return;
+        }
+        if (results.affectedRows > 0) {
+          res.json({ message: 'Employee updated successfully' });
+        } else {
+          res.status(404).json({ error: 'Employee not found' });
+        }
+      });
+    } else {
+      console.error('Role not found:', updatedEmployee.role_name);
+      res.status(404).json({ error: 'Role not found' });
+    }
+  });
+});
+
+// Endpoint to archive an employee
+app.put('/employees/:employeeId/archive', (req, res) => {
+  const { employeeId } = req.params;
+  const query = 'UPDATE employee SET archive_status = "archive", status = "inactive" WHERE employee_id = ?';
+  db.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error('Error archiving employee:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Employee archived and set to inactive successfully' });
+    } else {
+      res.status(404).json({ error: 'Employee not found' });
+    }
+  });
+});
+
+// Endpoint to unarchive an employee
+app.put('/employees/:employeeId/unarchive', (req, res) => {
+  const { employeeId } = req.params;
+  const query = 'UPDATE employee SET archive_status = "unarchive", status = "active" WHERE employee_id = ?';
+  db.query(query, [employeeId], (err, results) => {
+    if (err) {
+      console.error('Error unarchiving employee:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Employee unarchived and set to active successfully' });
+    } else {
+      res.status(404).json({ error: 'Employee not found' });
+    }
+  });
+});
+
+// Endpoint to fetch roles
+app.get('/roles', (req, res) => {
+  const query = 'SELECT role_name FROM roles';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching roles:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(results.map(role => role.role_name));
+  });
+});
+
+// Fetch all school years
+app.get('/school-years', (req, res) => {
+  const { searchTerm, school_year } = req.query;
+
+  let query = 'SELECT * FROM school_year';
+  let queryParams = [];
+
+  if (searchTerm || school_year) {
+    query += ' WHERE';
+    if (searchTerm) {
+      query += ' school_year LIKE ?';
+      queryParams.push(`%${searchTerm}%`);
+    }
+    if (school_year) {
+      if (searchTerm) query += ' AND';
+      query += ' school_year = ?';
+      queryParams.push(school_year);
+    }
+  } else {
+    query += ' WHERE status = "active"'; // Default filter to show only active school years
+  }
+
+  console.log('Query:', query);
+  console.log('QueryParams:', queryParams);
+
+  db.query(query, queryParams, (err, result) => {
+    if (err) {
+      console.error('Error fetching school years:', err); // Detailed error logging
+      res.status(500).send({ error: 'Error fetching school years', details: err.message });
+    } else {
+      console.log('Result:', result);
+      res.send(result);
+    }
+  });
+});
+
+// Fetch specific school year details
+app.get('/school-years/:id', (req, res) => {
+  const { id } = req.params;
+  const query = 'SELECT * FROM school_year WHERE school_year_id = ?';
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error('Error fetching school year details:', err); // Detailed error logging
+      res.status(500).send({ error: 'Error fetching school year details', details: err.message });
+    } else {
+      res.send(result);
+    }
+  });
+});
+
+// Endpoint to add a new school year
+app.post('/school-years', (req, res) => {
+  const { school_year, school_year_start, school_year_end, enrollment_start, enrollment_end, status } = req.body;
+  const query = 'INSERT INTO school_year (school_year, school_year_start, school_year_end, enrollment_start, enrollment_end, status) VALUES (?, ?, ?, ?, ?, ?)';
+  
+  db.query(query, [school_year, school_year_start, school_year_end, enrollment_start, enrollment_end, status], (err, result) => {
+    if (err) {
+      console.error('Error adding school year:', err);
+      res.status(500).send({ error: 'Error adding school year', details: err.message });
+    } else {
+      res.status(201).send({ message: 'School year added successfully' });
+    }
+  });
+});
+
+// Endpoint to update school year details by ID
+app.put('/school-years/:schoolYearId', (req, res) => {
+  const { schoolYearId } = req.params;
+  const updatedSchoolYear = req.body;
+
+  const query = 'UPDATE school_year SET ? WHERE school_year_id = ?';
+  db.query(query, [updatedSchoolYear, schoolYearId], (err, results) => {
+    if (err) {
+      console.error('Error updating school year details:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'School year updated successfully' });
+    } else {
+      res.status(404).json({ error: 'School year not found' });
+    }
+  });
+});
+
+// Endpoint to fetch sections for SectionPage
+app.get('/sections', (req, res) => {
+  const { searchTerm, grade } = req.query;
+  const query = `
+    SELECT s.section_id, s.section_name, s.grade_level, s.status, s.max_capacity, sy.school_year
+    FROM section s
+    JOIN section_open so ON s.section_id = so.section_id
+    JOIN school_year sy ON so.school_year_id = sy.school_year_id
+    WHERE sy.status = 'active'
+  `;
+  const queryParams = [];
+
+  if (searchTerm) {
+    query += ' AND s.section_name LIKE ?';
+    queryParams.push(`%${searchTerm}%`);
+  }
+
+  if (grade) {
+    query += ' AND s.grade_level = ?';
+    queryParams.push(grade);
+  }
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error fetching sections:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// Endpoint to fetch section details by ID
+app.get('/sections/:id', (req, res) => {
+  const { id } = req.params;
+  const query = `
+    SELECT s.section_id, s.section_name, s.grade_level, s.status, s.max_capacity, sy.school_year
+    FROM section s
+    JOIN section_open so ON s.section_id = so.section_id
+    JOIN school_year sy ON so.school_year_id = sy.school_year_id
+    WHERE s.section_id = ?
+  `;
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error('Error fetching section details:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(result[0]);
+  });
+});
+
+// Fetch students by section ID and segregate by gender
+app.get('/sections/:id/students', (req, res) => {
+  const { id } = req.params;
+  const sql = 'SELECT * FROM student WHERE section_id = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error fetching students:', err); // Detailed error logging
+      return res.status(500).send({ error: 'Error fetching students', details: err.message });
+    }
+    console.log('Fetched students:', result); // Log the fetched students
+    const boys = result.filter(student => student.gender === 'Male');
+    const girls = result.filter(student => student.gender === 'Female');
+    res.json({ boys, girls });
   });
 });
 

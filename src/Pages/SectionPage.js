@@ -4,8 +4,8 @@ import React from 'react';
 function SectionPage() {
   return (
     <div>
-      <h1>Section</h1>
-      {/* Add section content here */}
+      <h1>Sections</h1>
+      {/* Add sections content here */}
     </div>
   );
 }
