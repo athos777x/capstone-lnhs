@@ -25,6 +25,8 @@ const roleMap = {
 };
 
 // Login endpoint
+// Function: Authenticates a user based on provided username and password
+// Pages: LoginForm.js
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
   console.log(`Login attempt: username=${username}, password=${password}`);
@@ -48,6 +50,8 @@ app.post('/login', (req, res) => {
 });
 
 // Endpoint to fetch user details by ID
+// Function: Fetches detailed information about a user based on their user ID
+// Pages: Layout.js
 app.get('/users/:userId', (req, res) => {
   const userId = req.params.userId;
   console.log(`Fetching user details for userId: ${userId}`);
@@ -57,7 +61,6 @@ app.get('/users/:userId', (req, res) => {
     JOIN employee e ON u.user_id = e.user_id 
     WHERE u.user_id = ?
   `;
-  
   db.query(query, [userId], (err, results) => {
     if (err) {
       console.error('Database query error:', err);
@@ -75,6 +78,9 @@ app.get('/users/:userId', (req, res) => {
 });
 
 // Endpoint to fetch all students
+// Function: Retrieves a list of all students with optional filtering by search term, grade, section, and school year
+// Pages: StudentsPage.js, SectionPage.js, GradesPage.js, AttendancePage.js
+// Filters: SearchFilter.js
 app.get('/students', (req, res) => {
   const { searchTerm, grade, section, school_year } = req.query;
   console.log('Received params:', { searchTerm, grade, section, school_year });
@@ -148,6 +154,8 @@ app.get('/students', (req, res) => {
 });
 
 // Endpoint to fetch grades for a specific student
+// Function: Retrieves the grades of a student based on their student ID
+// Pages: AcademicRecordPage.js
 app.get('/students/:student_id/grades', (req, res) => {
   const { student_id } = req.params;
   const query = `SELECT g.first_quarter AS q1_grade, g.second_quarter AS q2_grade, g.third_quarter AS q3_grade, g.fourth_quarter AS q4_grade, s.subject_name
@@ -166,7 +174,10 @@ app.get('/students/:student_id/grades', (req, res) => {
   });
 });
 
-// Endpoint to fetch sections for select section filter for StudentsPage, GradesPage, and AttendancePage
+// Endpoint to fetch sections for select section filter
+// Function: Retrieves sections for filtering in various pages
+// Pages: StudentsPage.js, GradesPage.js, AttendancePage.js
+// Filters: SectionListSearchFilter.js, SectionSearchFilter.js, SearchFilter.js
 app.get('/api/sections', (req, res) => {
   const query = 'SELECT section_id, section_name FROM section';
   db.query(query, (err, results) => {
@@ -180,6 +191,8 @@ app.get('/api/sections', (req, res) => {
 });
 
 // Endpoint to fetch positions
+// Function: Retrieves distinct positions from the employee table
+// Pages: EmployeeSearchFilter.js
 app.get('/api/positions', (req, res) => {
   const query = 'SELECT DISTINCT role_name FROM employee';
   db.query(query, (err, results) => {
@@ -193,6 +206,8 @@ app.get('/api/positions', (req, res) => {
 });
 
 // Endpoint to fetch departments
+// Function: Retrieves distinct departments from the employee table
+// Pages: EmployeePage.js
 app.get('/api/departments', (req, res) => {
   const query = 'SELECT DISTINCT department FROM employee';
   db.query(query, (err, results) => {
@@ -206,6 +221,9 @@ app.get('/api/departments', (req, res) => {
 });
 
 // Fetch filter options for school year and grades
+// Function: Retrieves filter options for school years, grades, and sections
+// Pages: SchoolYearPage.js, SearchFilter.js
+// Filters: SectionListSearchFilter.js, SectionSearchFilter.js
 app.get('/filters', (req, res) => {
   const filters = {
     schoolYears: [],
@@ -239,6 +257,8 @@ app.get('/filters', (req, res) => {
 });
 
 // Endpoint to fetch attendance data for a specific student
+// Function: Retrieves the attendance records of a student based on their student ID
+// Pages: AttendancePage.js
 app.get('/attendance/:studentId', (req, res) => {
   const studentId = req.params.studentId;
   const query = `
@@ -273,6 +293,8 @@ app.get('/attendance/:studentId', (req, res) => {
 });
 
 // Fetch school years
+// Function: Retrieves all school years in descending order
+// Pages: SchoolYearSearchFilter.js, SearchFilter.js
 app.get('/api/school_years', (req, res) => {
   const query = 'SELECT school_year FROM school_year ORDER BY school_year DESC';
   db.query(query, (err, results) => {
@@ -286,6 +308,8 @@ app.get('/api/school_years', (req, res) => {
 });
 
 // Endpoint to fetch the current school year
+// Function: Retrieves the current active school year
+// Pages: SchoolYearPage.js
 app.get('/current-school-year', (req, res) => {
   try {
     const currentSchoolYear = '2023-2024'; // Replace with actual logic to fetch from database
@@ -296,6 +320,8 @@ app.get('/current-school-year', (req, res) => {
 });
 
 // Endpoint to fetch student details
+// Function: Retrieves detailed information about a student based on their student ID
+// Pages: StudentDetailPage.js
 app.get('/students/:id/details', (req, res) => {
   const studentId = req.params.id;
 
@@ -309,9 +335,7 @@ app.get('/students/:id/details', (req, res) => {
     LEFT JOIN student_school_year ss ON s.student_id = ss.student_id
     LEFT JOIN school_year sy ON ss.school_year_id = sy.school_year_id
     WHERE s.student_id = ?
-    ORDER BY sy.school_year DESC
   `;
-
   db.query(query, [studentId], (err, results) => {
     if (err) {
       console.error('Error fetching student details:', err);
@@ -354,6 +378,9 @@ app.get('/students/:id/details', (req, res) => {
 });
 
 // Endpoint to fetch all employees
+// Function: Retrieves a list of all employees with optional filtering by status, position, department, search term, and archive status
+// Pages: EmployeePage.js
+// Filters: EmployeeSearchFilter.js
 app.get('/employees', (req, res) => {
   const { status, position, department, searchTerm, showArchive } = req.query;
 
@@ -406,6 +433,8 @@ app.get('/employees', (req, res) => {
 });
 
 // Endpoint to fetch employee details by ID
+// Function: Fetches detailed information about an employee based on their employee ID
+// Pages: EmployeePage.js
 app.get('/employees/:employeeId', (req, res) => {
   const { employeeId } = req.params;
   const query = 'SELECT * FROM employee WHERE employee_id = ?';
@@ -423,7 +452,10 @@ app.get('/employees/:employeeId', (req, res) => {
   });
 });
 
+
 // Endpoint to update employee details by ID
+// Function: Updates an employee's details based on their employee ID
+// Pages: EmployeePage.js
 app.put('/employees/:employeeId', (req, res) => {
   const { employeeId } = req.params;
   const updatedEmployee = req.body;
@@ -466,6 +498,8 @@ app.put('/employees/:employeeId', (req, res) => {
 });
 
 // Endpoint to archive an employee
+// Function: Archives an employee by updating their status to inactive and archive status to archive
+// Pages: EmployeePage.js
 app.put('/employees/:employeeId/archive', (req, res) => {
   const { employeeId } = req.params;
   const query = 'UPDATE employee SET archive_status = "archive", status = "inactive" WHERE employee_id = ?';
@@ -484,6 +518,8 @@ app.put('/employees/:employeeId/archive', (req, res) => {
 });
 
 // Endpoint to unarchive an employee
+// Function: Unarchives an employee by updating their status to active and archive status to unarchive
+// Pages: EmployeePage.js
 app.put('/employees/:employeeId/unarchive', (req, res) => {
   const { employeeId } = req.params;
   const query = 'UPDATE employee SET archive_status = "unarchive", status = "active" WHERE employee_id = ?';
@@ -502,6 +538,8 @@ app.put('/employees/:employeeId/unarchive', (req, res) => {
 });
 
 // Endpoint to fetch roles
+// Function: Retrieves a list of roles from the roles table
+// Pages: EmployeePage.js
 app.get('/roles', (req, res) => {
   const query = 'SELECT role_name FROM roles';
   db.query(query, (err, results) => {
@@ -515,11 +553,13 @@ app.get('/roles', (req, res) => {
 });
 
 // Fetch all school years
+// Function: Retrieves a list of all school years
+// Pages: SchoolYearPage.js, SchoolYearSearchFilter.js
 app.get('/school-years', (req, res) => {
   const { searchTerm, school_year } = req.query;
 
   let query = 'SELECT * FROM school_year';
-  let queryParams = [];
+  const queryParams = [];
 
   if (searchTerm || school_year) {
     query += ' WHERE';
@@ -551,6 +591,8 @@ app.get('/school-years', (req, res) => {
 });
 
 // Fetch specific school year details
+// Function: Retrieves detailed information about a specific school year based on its ID
+// Pages: SchoolYearPage.js
 app.get('/school-years/:id', (req, res) => {
   const { id } = req.params;
   const query = 'SELECT * FROM school_year WHERE school_year_id = ?';
@@ -565,6 +607,8 @@ app.get('/school-years/:id', (req, res) => {
 });
 
 // Endpoint to add a new school year
+// Function: Adds a new school year to the database
+// Pages: SchoolYearPage.js
 app.post('/school-years', (req, res) => {
   const { school_year, school_year_start, school_year_end, enrollment_start, enrollment_end, status } = req.body;
   const query = 'INSERT INTO school_year (school_year, school_year_start, school_year_end, enrollment_start, enrollment_end, status) VALUES (?, ?, ?, ?, ?, ?)';
@@ -580,6 +624,8 @@ app.post('/school-years', (req, res) => {
 });
 
 // Endpoint to update school year details by ID
+// Function: Updates the details of a school year based on its ID
+// Pages: SchoolYearPage.js
 app.put('/school-years/:schoolYearId', (req, res) => {
   const { schoolYearId } = req.params;
   const updatedSchoolYear = req.body;
@@ -599,14 +645,16 @@ app.put('/school-years/:schoolYearId', (req, res) => {
   });
 });
 
-// Endpoint to fetch sections for SectionPage
+// Endpoint to fetch sections
+// Function: Retrieves sections with optional filtering by search term, grade, and archive status
+// Pages: SectionPage.js, SectionListPage.js
+// Filters: SectionListSearchFilter.js, SectionSearchFilter.js, SearchFilter.js
 app.get('/sections', (req, res) => {
-  const { searchTerm, grade } = req.query;
-  const query = `
-    SELECT s.section_id, s.section_name, s.grade_level, s.status, s.max_capacity, sy.school_year
+  const { searchTerm, grade, showArchive } = req.query;
+  let query = `
+    SELECT s.section_id, s.section_name, s.grade_level, s.status, s.max_capacity, sy.school_year, s.archive_status, s.room_number
     FROM section s
-    JOIN section_open so ON s.section_id = so.section_id
-    JOIN school_year sy ON so.school_year_id = sy.school_year_id
+    JOIN school_year sy ON s.school_year_id = sy.school_year_id
     WHERE sy.status = 'active'
   `;
   const queryParams = [];
@@ -621,6 +669,11 @@ app.get('/sections', (req, res) => {
     queryParams.push(grade);
   }
 
+  if (showArchive) {
+    query += ' AND s.archive_status = ?';
+    queryParams.push(showArchive);
+  }
+
   db.query(query, queryParams, (err, results) => {
     if (err) {
       console.error('Error fetching sections:', err);
@@ -632,26 +685,33 @@ app.get('/sections', (req, res) => {
 });
 
 // Endpoint to fetch section details by ID
+// Function: Retrieves detailed information about a section based on its ID
+// Pages: SectionPage.js, SectionListPage.js
 app.get('/sections/:id', (req, res) => {
   const { id } = req.params;
   const query = `
-    SELECT s.section_id, s.section_name, s.grade_level, s.status, s.max_capacity, sy.school_year
+    SELECT s.section_id, s.section_name, s.grade_level, s.status, s.max_capacity, sy.school_year, s.room_number
     FROM section s
-    JOIN section_open so ON s.section_id = so.section_id
-    JOIN school_year sy ON so.school_year_id = sy.school_year_id
+    JOIN school_year sy ON s.school_year_id = sy.school_year_id
     WHERE s.section_id = ?
   `;
   db.query(query, [id], (err, result) => {
     if (err) {
-      console.error('Error fetching section details:', err);
+      console.error('Error fetching section details:', err); // Detailed error logging
       res.status(500).json({ error: 'Internal server error' });
       return;
     }
-    res.json(result[0]);
+    if (result.length === 0) {
+      res.status(404).json({ error: 'Section not found' });
+    } else {
+      res.json(result[0]);
+    }
   });
 });
 
 // Fetch students by section ID and segregate by gender
+// Function: Retrieves students in a specific section and segregates them by gender
+// Pages: SectionPage.js, SectionListPage.js
 app.get('/sections/:id/students', (req, res) => {
   const { id } = req.params;
   const sql = 'SELECT * FROM student WHERE section_id = ?';
@@ -666,6 +726,302 @@ app.get('/sections/:id/students', (req, res) => {
     res.json({ boys, girls });
   });
 });
+
+// Endpoint to add a new section
+// Function: Adds a new section to the database
+// Pages: SectionPage.js
+app.post('/sections', (req, res) => {
+  const { section_name, grade_level, status, max_capacity, school_year_id, room_number } = req.body;
+
+  // Log the request body to see the received data
+  console.log('Request body:', req.body);
+
+  // SQL query to insert a new section with archive_status defaulted to 'unarchive'
+  const query = `
+    INSERT INTO section (section_name, grade_level, status, max_capacity, school_year_id, room_number, archive_status)
+    VALUES (?, ?, ?, ?, ?, ?, 'unarchive')
+  `;
+
+  // Execute the query
+  db.query(query, [section_name, grade_level, status, max_capacity, school_year_id, room_number], (err, result) => {
+    if (err) {
+      // Log the error for detailed analysis
+      console.error('Error adding new section:', err);
+      res.status(500).json({ error: 'Internal server error', details: err.message });
+      return;
+    }
+    res.status(201).json({ message: 'Section added successfully' });
+  });
+});
+
+// Endpoint to archive a section
+// Function: Archives a section by updating its status to inactive and archive status to archive
+// Pages: SectionPage.js
+app.put('/sections/:sectionId/archive', (req, res) => {
+  const { sectionId } = req.params;
+  const { status, archive_status } = req.body;
+  const query = 'UPDATE section SET status = ?, archive_status = ? WHERE section_id = ?';
+  db.query(query, [status, archive_status, sectionId], (err, results) => {
+    if (err) {
+      console.error('Error archiving section:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Section archived and status updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Section not found' });
+    }
+  });
+});
+
+// Endpoint to fetch enrolled students
+// Function: Retrieves a list of all enrolled students with optional filtering by status, grade, section, etc.
+// Pages: EnrolledStudentsPage.js
+app.get('/enrolled-students', (req, res) => {
+  const { status, grade, section, searchTerm } = req.query;
+  let query = `
+    SELECT s.student_id, s.firstname, s.middlename, s.lastname, e.grade_level, e.enrollment_status
+    FROM student s
+    JOIN enrollment e ON s.student_id = e.student_id
+    WHERE 1=1
+  `;
+  const queryParams = [];
+
+  if (status) {
+    query += ' AND e.enrollment_status = ?';
+    queryParams.push(status);
+  }
+
+  if (grade) {
+    query += ' AND e.grade_level = ?';
+    queryParams.push(grade);
+  }
+
+  if (section) {
+    query += ' AND e.section_id = ?';
+    queryParams.push(section);
+  }
+
+  if (searchTerm) {
+    query += ' AND (s.firstname LIKE ? OR s.lastname LIKE ?)';
+    queryParams.push(`%${searchTerm}%`, `%${searchTerm}%`);
+  }
+
+  console.log('Final query:', query);
+  console.log('Query parameters:', queryParams);
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error fetching enrolled students:', err);
+      res.status(500).json({ error: 'Internal server error', details: err.message });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// Endpoint to fetch schedules
+// Function: Retrieves a list of schedules with optional filtering by search term, date, and section
+// Pages: SchedulePage.js
+app.get('/schedules', (req, res) => {
+  const { searchTerm, date } = req.query;
+  let query = `
+    SELECT s.schedule_id, s.section_name, sc.date, sc.time
+    FROM schedule sc
+    JOIN section s ON sc.section_id = s.section_id
+    WHERE 1=1
+  `;
+  const queryParams = [];
+
+  if (searchTerm) {
+    query += ' AND s.section_name LIKE ?';
+    queryParams.push(`%${searchTerm}%`);
+  }
+
+  if (date) {
+    query += ' AND sc.date = ?';
+    queryParams.push(date);
+  }
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error fetching schedules:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// Endpoint to fetch schedules for a specific section
+app.get('/sections/:sectionId/schedules', (req, res) => {
+  const { sectionId } = req.params;
+  const query = `
+    SELECT sc.schedule_id, sc.teacher_id, sb.subject_name, sc.time_start, sc.time_end, sc.day, sc.section_id, sc.schedule_status
+    FROM schedule sc
+    JOIN subject sb ON sc.subject_id = sb.subject_id
+    WHERE sc.section_id = ?
+  `;
+  db.query(query, [sectionId], (err, results) => {
+    if (err) {
+      console.error('Error fetching schedules:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// New endpoint to approve a schedule
+app.put('/schedules/:scheduleId/approve', (req, res) => {
+  const { scheduleId } = req.params;
+  const query = 'UPDATE schedule SET schedule_status = "Approved" WHERE schedule_id = ?';
+  db.query(query, [scheduleId], (err, results) => {
+    if (err) {
+      console.error('Error approving schedule:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Schedule approved successfully' });
+    } else {
+      res.status(404).json({ error: 'Schedule not found' });
+    }
+  });
+});
+
+// Endpoint to update schedule details by ID
+app.put('/schedules/:scheduleId', (req, res) => {
+  const { scheduleId } = req.params;
+  const { teacher_id, time_start, time_end, day, schedule_status } = req.body;
+  const query = 'UPDATE schedule SET teacher_id = ?, time_start = ?, time_end = ?, day = ?, schedule_status = ? WHERE schedule_id = ?';
+  db.query(query, [teacher_id, time_start, time_end, day, schedule_status, scheduleId], (err, results) => {
+    if (err) {
+      console.error('Error updating schedule details:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Schedule updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Schedule not found' });
+    }
+  });
+});
+
+// Endpoint to get subjects and subjects details
+// Function: Retrieves subjects with optional filtering by search term, school year, grade, and archive status
+// Pages: SubjectsPage.js
+// Filters: SubjectsSearchFilter.js
+app.get('/subjects', (req, res) => {
+  const { searchTerm, school_year, grade, archive_status } = req.query;
+  
+  let query = `
+    SELECT s.subject_id, s.grade_level, s.subject_name, s.status, s.grading_criteria, s.description, s.archive_status, sy.school_year
+    FROM subject s
+    JOIN school_year sy ON s.school_year_id = sy.school_year_id
+    WHERE s.archive_status = ?
+  `;
+  const queryParams = [archive_status];
+
+  if (searchTerm) {
+    query += ' AND s.subject_name LIKE ?';
+    queryParams.push(`%${searchTerm}%`);
+  }
+
+  if (school_year) {
+    query += ' AND sy.school_year = ?';
+    queryParams.push(school_year);
+  }
+
+  if (grade) {
+    query += ' AND s.grade_level = ?';
+    queryParams.push(grade);
+  }
+
+  db.query(query, queryParams, (error, results) => {
+    if (error) {
+      return res.status(500).send(error);
+    }
+    res.send(results);
+  });
+});
+
+// Endpoint to update subject details
+// Function: Updates a subject's details based on its subject ID
+// Pages: SubjectsPage.js
+app.put('/subjects/:subjectId', (req, res) => {
+  const { subjectId } = req.params;
+  const updatedSubject = req.body;
+
+  // Ensure that updatedSubject only contains valid columns for the subject table
+  const allowedFields = ['subject_name', 'grade_level', 'status', 'grading_criteria', 'description', 'archive_status', 'school_year_id'];
+  Object.keys(updatedSubject).forEach(key => {
+    if (!allowedFields.includes(key)) {
+      delete updatedSubject[key];
+    }
+  });
+
+  console.log(`Updating subject with ID: ${subjectId}`, updatedSubject);
+
+  const query = 'UPDATE subject SET ? WHERE subject_id = ?';
+  db.query(query, [updatedSubject, subjectId], (err, results) => {
+    if (err) {
+      console.error('Error updating subject details:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Subject updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Subject not found' });
+    }
+  });
+});
+
+// Endpoint to archive or unarchive a subject
+// Function: Archives or unarchives a subject by updating its status and archive status
+// Pages: SubjectsPage.js
+app.put('/subjects/:subjectId/archive', (req, res) => {
+  const { subjectId } = req.params;
+  const { status, archive_status } = req.body;
+  const query = 'UPDATE subject SET status = ?, archive_status = ? WHERE subject_id = ?';
+  db.query(query, [status, archive_status, subjectId], (err, results) => {
+    if (err) {
+      console.error('Error updating subject:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Subject updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Subject not found' });
+    }
+  });
+});
+
+// Endpoint to add a new subject
+// Function: Adds a new subject to the database
+// Pages: SubjectsPage.js
+app.post('/subjects', (req, res) => {
+  const { subject_name, grade_level, status, grading_criteria, description, school_year, archive_status } = req.body;
+  const query = `
+    INSERT INTO subject (subject_name, grade_level, status, grading_criteria, description, school_year_id, archive_status)
+    VALUES (?, ?, ?, ?, ?, (SELECT school_year_id FROM school_year WHERE school_year = ?), ?)
+  `;
+  const queryParams = [subject_name, grade_level, status, grading_criteria, description, school_year, archive_status];
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error adding subject:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.status(201).json({ message: 'Subject added successfully', subjectId: results.insertId });
+  });
+});
+
 
 app.listen(3001, () => {
   console.log('Server running on port 3001');
