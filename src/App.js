@@ -1,10 +1,7 @@
-// App.js
 import React, { useState, useEffect } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import './CssPage/LoginForm.css'; // Import the new CSS file
-import StudentDashboard from './RoleDashboard/StudentDashboard';
-import PrincipalDashboard from './RoleDashboard/PrincipalDashboard';
 import LoginForm from './Utilities/LoginForm';
 import Layout from './Utilities/Layout';
 import ProfilePage from './Pages/ProfilePage';
@@ -43,11 +40,7 @@ function App() {
     setRole(userRole);
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('role', userRole);
-    if (userRole === 'principal') {
-      navigate('/principal-dashboard');
-    } else if (userRole === 'student') {
-      navigate('/student-dashboard');
-    }
+    navigate('/home');
   };
 
   const handleLogout = () => {
@@ -63,19 +56,17 @@ function App() {
         <Route path="/" element={<LoginForm onLogin={handleLogin} />} />
         {isAuthenticated && (
           <Route element={<Layout role={role} handleLogout={handleLogout} />}>
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/principal-dashboard" element={<PrincipalDashboard />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/academic-record" element={<AcademicRecordPage />} />
             <Route path="/enrollment" element={<EnrollmentPage />} />
             <Route path="/section-list" element={<SectionListPage />} />
             <Route path="/section" element={<SectionPage />} />
-            <Route path="/home" element={<HomePage />} />
             <Route path="/students" element={<StudentsPage />} />
             <Route path="/students/:id/details" element={<StudentDetailPage />} />
             <Route path="/grades" element={<GradesPage />} />
             <Route path="/attendance" element={<AttendancePage />} />
-            <Route path="/employees" element={<EmployeePage />} /> 
+            <Route path="/employees" element={<EmployeePage />} />
             <Route path="/school-year" element={<SchoolYearPage />} />
             <Route path="/enrolled-students" element={<EnrolledStudentsPage />} />
             <Route path="/subjects" element={<SubjectsPage />} />
@@ -83,10 +74,10 @@ function App() {
             <Route path="/list-of-student-enrollees" element={<ListofStudentEnrolleesPage />} />
             <Route path="/summary-report-promotion" element={<SummaryReportonPromotionPage />} />
             <Route path="/early-enrollment-report" element={<EarlyEnrollmentReportPage />} />
-            <Route path="/schedule" element={<SchedulePage />} /> 
+            <Route path="/schedule" element={<SchedulePage />} />
           </Route>
         )}
-        <Route path="*" element={<Navigate to={isAuthenticated ? (role === 'principal' ? '/principal-dashboard' : '/student-dashboard') : '/'} />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? '/home' : '/'} />} />
       </Routes>
     </Router>
   );

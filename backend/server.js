@@ -21,7 +21,13 @@ db.connect(err => {
 
 const roleMap = {
   1: 'principal',
-  2: 'student'
+  2: 'student',
+  3: 'subject_teacher',
+  4: 'class_adviser',
+  5: 'grade_level_coordinator',
+  6: 'registrar',
+  7: 'academic_coordinator',
+  8: 'subject_coordinator'
 };
 
 // Login endpoint
@@ -49,33 +55,64 @@ app.post('/login', (req, res) => {
   });
 });
 
+
 // Endpoint to fetch user details by ID
 // Function: Fetches detailed information about a user based on their user ID
 // Pages: Layout.js
 app.get('/users/:userId', (req, res) => {
   const userId = req.params.userId;
   console.log(`Fetching user details for userId: ${userId}`);
-  const query = `
-    SELECT e.firstname, e.lastname, e.middlename, u.username, u.role_id
-    FROM users u 
-    JOIN employee e ON u.user_id = e.user_id 
-    WHERE u.user_id = ?
-  `;
-  db.query(query, [userId], (err, results) => {
+  
+  const queryUser = 'SELECT username, role_id FROM users WHERE user_id = ?';
+  db.query(queryUser, [userId], (err, userResults) => {
     if (err) {
       console.error('Database query error:', err);
       res.status(500).json({ error: 'Database error' });
       return;
     }
-    if (results.length > 0) {
-      console.log('User details found:', results[0]);
-      res.json(results[0]);
+    if (userResults.length > 0) {
+      const user = userResults[0];
+      const roleId = user.role_id;
+      let queryDetails;
+      
+      if (roleId === 2) { // Student
+        queryDetails = `
+          SELECT u.username, u.role_id, s.firstname, s.lastname, s.middlename
+          FROM users u
+          JOIN student s ON u.user_id = s.user_id
+          WHERE u.user_id = ?
+        `;
+      } else { // Employee roles
+        queryDetails = `
+          SELECT u.username, u.role_id, e.firstname, e.lastname, e.middlename
+          FROM users u
+          JOIN employee e ON u.user_id = e.user_id
+          WHERE u.user_id = ?
+        `;
+      }
+
+      db.query(queryDetails, [userId], (err, detailsResults) => {
+        if (err) {
+          console.error('Database query error:', err);
+          res.status(500).json({ error: 'Database error' });
+          return;
+        }
+        if (detailsResults.length > 0) {
+          const details = detailsResults[0];
+          const fullName = `${details.firstname} ${details.middlename ? details.middlename + ' ' : ''}${details.lastname}`;
+          res.json({ username: details.username, role_id: details.role_id, fullName });
+        } else {
+          console.log('User details not found for userId:', userId);
+          res.status(404).json({ error: 'User details not found' });
+        }
+      });
     } else {
       console.log('User not found for userId:', userId);
       res.status(404).json({ error: 'User not found' });
     }
   });
 });
+
 
 // Endpoint to fetch all students
 // Function: Retrieves a list of all students with optional filtering by search term, grade, section, and school year
@@ -1021,6 +1058,38 @@ app.post('/subjects', (req, res) => {
     res.status(201).json({ message: 'Subject added successfully', subjectId: results.insertId });
   });
 });
+
+// Endpoint to update section details by ID
+// Function: Updates section details
+// Pages: SectionPage.js
+app.put('/sections/:sectionId', (req, res) => {
+  const { sectionId } = req.params;
+  const updatedSection = req.body;
+
+  // Remove any fields that don't exist in the 'section' table
+  const allowedFields = ['section_name', 'grade_level', 'status', 'max_capacity', 'school_year_id', 'room_number', 'archive_status'];
+  const sanitizedUpdate = {};
+  for (const key in updatedSection) {
+    if (allowedFields.includes(key)) {
+      sanitizedUpdate[key] = updatedSection[key];
+    }
+  }
+
+  const query = 'UPDATE section SET ? WHERE section_id = ?';
+  db.query(query, [sanitizedUpdate, sectionId], (err, results) => {
+    if (err) {
+      console.error('Error updating section details:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    if (results.affectedRows > 0) {
+      res.json({ message: 'Section updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Section not found' });
+    }
+  });
+});
+
 
 
 app.listen(3001, () => {
