@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
-import './CssPage/LoginForm.css'; // Import the new CSS file
+import './CssFiles/LoginForm.css'; 
 import LoginForm from './Utilities/LoginForm';
 import Layout from './Utilities/Layout';
-import ProfilePage from './Pages/ProfilePage';
-import AcademicRecordPage from './Pages/AcademicRecordPage';
-import EnrollmentPage from './Pages/EnrollmentPage';
-import SectionListPage from './Pages/SectionListPage';
-import SectionPage from './Pages/SectionPage';
 import HomePage from './Pages/HomePage';
-import StudentsPage from './Pages/StudentsPage';
-import GradesPage from './Pages/GradesPage';
-import AttendancePage from './Pages/AttendancePage';
-import EmployeePage from './Pages/EmployeePage';
-import SchoolYearPage from './Pages/SchoolYearPage';
-import EnrolledStudentsPage from './Pages/EnrolledStudentsPage';
-import SubjectsPage from './Pages/SubjectsPage';
-import GenerateReportsPage from './Pages/GenerateReportsPage';
-import ListofStudentEnrolleesPage from './Pages/ListofStudentEnrolleesPage';
-import SummaryReportonPromotionPage from './Pages/SummaryReportonPromotionPage';
-import EarlyEnrollmentReportPage from './Pages/EarlyEnrollmentReportPage';
-import StudentDetailPage from './Pages/StudentDetailPage';
-import SchedulePage from './Pages/SchedulePage'; // Import the SchedulePage
+import Principal_StudentsPage from './PrincipalPages/Principal_StudentsPage';
+import Principal_GradesPage from './PrincipalPages/Principal_GradesPage';
+import Principal_AttendancePage from './PrincipalPages/Principal_AttendancePage';
+import Principal_EmployeePage from './PrincipalPages/Principal_EmployeePage';
+import Principal_SchoolYearPage from './PrincipalPages/Principal_SchoolYearPage';
+import Principal_EnrolledStudentsPage from './PrincipalPages/Principal_EnrolledStudentsPage';
+import Principal_SubjectsPage from './PrincipalPages/Principal_SubjectsPage';
+import Principal_SectionListPage from './PrincipalPages/Principal_SectionListPage';
+import Principal_SectionPage from './PrincipalPages/Principal_SectionPage';
+import Principal_ListofStudentEnrolleesPage from './PrincipalPages/Principal_ListofStudentEnrolleesPage';
+import Principal_SummaryReportonPromotionPage from './PrincipalPages/Principal_SummaryReportonPromotionPage';
+import Principal_EarlyEnrollmentReportPage from './PrincipalPages/Principal_EarlyEnrollmentReportPage';
+import Principal_StudentDetailPage from './PrincipalPages/Principal_StudentDetailPage';
+import Principal_SchedulePage from './PrincipalPages/Principal_SchedulePage'; 
+import Student_ProfilePage from './StudentPages/Student_ProfilePage';
+import Student_EnrollmentPage from './StudentPages/Student_EnrollmentPage';
+import Student_SchedulePage from './StudentPages/Student_SchedulePage'; 
+import Student_GradesPage from './StudentPages/Student_GradesPage';
+import Student_AttendancePage from './StudentPages/Student_AttendancePage';
+import Student_AccountPage from './StudentPages/Student_AccountPage';
+import Registrar_StudentsPage from './RegistrarPages/Registrar_StudentsPage';
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -57,24 +61,30 @@ function App() {
         {isAuthenticated && (
           <Route element={<Layout role={role} handleLogout={handleLogout} />}>
             <Route path="/home" element={<HomePage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/academic-record" element={<AcademicRecordPage />} />
-            <Route path="/enrollment" element={<EnrollmentPage />} />
-            <Route path="/section-list" element={<SectionListPage />} />
-            <Route path="/section" element={<SectionPage />} />
-            <Route path="/students" element={<StudentsPage />} />
-            <Route path="/students/:id/details" element={<StudentDetailPage />} />
-            <Route path="/grades" element={<GradesPage />} />
-            <Route path="/attendance" element={<AttendancePage />} />
-            <Route path="/employees" element={<EmployeePage />} />
-            <Route path="/school-year" element={<SchoolYearPage />} />
-            <Route path="/enrolled-students" element={<EnrolledStudentsPage />} />
-            <Route path="/subjects" element={<SubjectsPage />} />
-            <Route path="/generate-reports" element={<GenerateReportsPage />} />
-            <Route path="/list-of-student-enrollees" element={<ListofStudentEnrolleesPage />} />
-            <Route path="/summary-report-promotion" element={<SummaryReportonPromotionPage />} />
-            <Route path="/early-enrollment-report" element={<EarlyEnrollmentReportPage />} />
-            <Route path="/schedule" element={<SchedulePage />} />
+
+            <Route path="/section-list" element={<Principal_SectionListPage />} />
+            <Route path="/section" element={<Principal_SectionPage />} />
+            <Route path="/students" element={<Principal_StudentsPage />} />
+            <Route path="/students/:id/details" element={<Principal_StudentDetailPage />} />
+            <Route path="/grades" element={<Principal_GradesPage />} />
+            <Route path="/attendance" element={<Principal_AttendancePage />} />
+            <Route path="/employees" element={<Principal_EmployeePage />} />
+            <Route path="/school-year" element={<Principal_SchoolYearPage />} />
+            <Route path="/enrolled-students" element={<Principal_EnrolledStudentsPage />} />
+            <Route path="/subjects" element={<Principal_SubjectsPage />} />
+            <Route path="/list-of-student-enrollees" element={<Principal_ListofStudentEnrolleesPage />} />
+            <Route path="/summary-report-promotion" element={<Principal_SummaryReportonPromotionPage />} />
+            <Route path="/early-enrollment-report" element={<Principal_EarlyEnrollmentReportPage />} />
+            <Route path="/schedule" element={<Principal_SchedulePage />} />
+
+            <Route path="/profile" element={<Student_ProfilePage />} />
+            <Route path="/student-schedule" element={<Student_SchedulePage />} />
+            <Route path="/student-grades" element={<Student_GradesPage />} />
+            <Route path="/student-attendance" element={<Student_AttendancePage />} />
+            <Route path="/enrollment" element={<Student_EnrollmentPage />} />
+            <Route path="/account" element={<Student_AccountPage />} />
+
+            <Route path="/registrar-students" element={<Registrar_StudentsPage />} />
           </Route>
         )}
         <Route path="*" element={<Navigate to={isAuthenticated ? '/home' : '/'} />} />

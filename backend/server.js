@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(bodyParser.json());
@@ -192,10 +193,10 @@ app.get('/students', (req, res) => {
 
 // Endpoint to fetch grades for a specific student
 // Function: Retrieves the grades of a student based on their student ID
-// Pages: AcademicRecordPage.js
+// Pages: Principal_GradesPage.js
 app.get('/students/:student_id/grades', (req, res) => {
   const { student_id } = req.params;
-  const query = `SELECT g.first_quarter AS q1_grade, g.second_quarter AS q2_grade, g.third_quarter AS q3_grade, g.fourth_quarter AS q4_grade, s.subject_name
+  const query = `SELECT g.first_quarter AS q1_grade, g.second_quarter AS q2_grade, g.third_quarter AS q3_grade, g.fourth_quarter AS q4_grade, g.final_grade, g.remarks, s.subject_name, g.grade_level
                  FROM grades g
                  JOIN schedule sc ON g.schedule_id = sc.schedule_id
                  JOIN subject s ON sc.subject_id = s.subject_id
@@ -895,10 +896,14 @@ app.get('/schedules', (req, res) => {
 app.get('/sections/:sectionId/schedules', (req, res) => {
   const { sectionId } = req.params;
   const query = `
-    SELECT sc.schedule_id, sc.teacher_id, sb.subject_name, sc.time_start, sc.time_end, sc.day, sc.section_id, sc.schedule_status
+    SELECT sc.schedule_id, sc.teacher_id, sb.subject_name, 
+           TIME_FORMAT(sc.time_start, '%h:%i %p') as time_start, 
+           TIME_FORMAT(sc.time_end, '%h:%i %p') as time_end, 
+           sc.day, sc.section_id, sc.schedule_status
     FROM schedule sc
     JOIN subject sb ON sc.subject_id = sb.subject_id
     WHERE sc.section_id = ?
+    ORDER BY sc.time_start
   `;
   db.query(query, [sectionId], (err, results) => {
     if (err) {
@@ -1089,6 +1094,122 @@ app.put('/sections/:sectionId', (req, res) => {
     }
   });
 });
+
+// Endpoint to fetch student profile details by user ID
+app.get('/student/profile/:userId', (req, res) => {
+  const userId = req.params.userId;
+  console.log(`Fetching student profile details for userId: ${userId}`);
+
+  const query = `
+    SELECT s.student_id, s.lastname, s.firstname, s.middlename, s.current_yr_lvl, s.birthdate, s.gender,
+           s.age, s.home_address, s.barangay, s.city_municipality, s.province, s.contact_number, s.email_address,
+           s.mother_name, s.father_name, s.parent_address, s.father_occupation, s.mother_occupation,
+           s.annual_hshld_income, s.number_of_siblings, s.father_educ_lvl, s.mother_educ_lvl,
+           s.father_contact_number, s.mother_contact_number, s.id_picture, s.birth_certificate, 
+           s.form_138, s.goodmoral_cert, s.rcv_test, s.section_id, s.user_id, u.username
+    FROM student s
+    JOIN users u ON s.user_id = u.user_id
+    WHERE s.user_id = ?
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Database query error:', err);
+      res.status(500).json({ error: 'Database error' });
+      return;
+    }
+    if (results.length > 0) {
+      res.json(results[0]);
+    } else {
+      console.log('Student profile details not found for userId:', userId);
+      res.status(404).json({ error: 'Student profile details not found' });
+    }
+  });
+});
+
+// Endpoint to fetch grades for the currently logged in student using userId
+app.get('/user/:userId/grades', (req, res) => {
+  const userId = req.params.userId;
+  const query = `
+    SELECT g.first_quarter, g.second_quarter, g.third_quarter, g.fourth_quarter, g.final_grade, g.remarks, s.subject_name, g.grade_level
+    FROM grades g
+    JOIN schedule sc ON g.schedule_id = sc.schedule_id
+    JOIN subject s ON sc.subject_id = s.subject_id
+    WHERE g.user_id = ?
+  `;
+  console.log(`Fetching grades for userId: ${userId}`); // Debug log
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching grades:', err);
+      res.status(500).send('Error fetching grades');
+    } else {
+      console.log('Grades fetched from DB:', results); // Debug log
+      res.json(results);
+    }
+  });
+});
+
+// Endpoint to fetch schedule for the currently logged-in student
+app.get('/user/:userId/schedule', (req, res) => {
+  const userId = req.params.userId;
+  const query = `
+    SELECT s.subject_name, sc.day, 
+           TIME_FORMAT(sc.time_start, '%H:%i:%s') as time_start, 
+           TIME_FORMAT(sc.time_end, '%h:%i %p') as time_end
+    FROM schedule sc
+    JOIN subject s ON sc.subject_id = s.subject_id
+    JOIN section sec ON sc.section_id = sec.section_id
+    JOIN enrollment e ON e.section_id = sec.section_id
+    JOIN student st ON st.student_id = e.student_id
+    WHERE st.user_id = ? AND e.enrollment_status = 'active' AND sc.schedule_status = 'Approved'
+    ORDER BY FIELD(sc.day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'), sc.time_start;
+  `;
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching schedule:', err);
+      res.status(500).send('Error fetching schedule');
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// New endpoint to change the user's password
+app.put('/user/:userId/change-password', (req, res) => {
+  const { userId } = req.params;
+  const { currentPassword, newPassword } = req.body;
+
+  const userQuery = 'SELECT * FROM users WHERE user_id = ?';
+  db.query(userQuery, [userId], (err, userResults) => {
+    if (err) {
+      console.error('Database query error:', err);
+      res.status(500).json({ error: 'Database error' });
+      return;
+    }
+    if (userResults.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const user = userResults[0];
+    if (currentPassword !== user.password) {
+      return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+    }
+
+    const updateQuery = 'UPDATE users SET password = ? WHERE user_id = ?';
+    db.query(updateQuery, [newPassword, userId], (err, updateResults) => {
+      if (err) {
+        console.error('Error updating password:', err);
+        res.status(500).json({ error: 'Database error' });
+        return;
+      }
+      res.json({ success: true, message: 'Password changed successfully' });
+    });
+  });
+});
+
+
+
 
 
 

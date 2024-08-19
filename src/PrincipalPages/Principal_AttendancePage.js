@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import SearchFilter from '../Utilities/SearchFilter';
+import SearchFilter from '../RoleSearchFilters/SearchFilter';
 import axios from 'axios';
-import '../CssPage/AttendancePage.css';
+import '../CssPage/Principal_AttendancePage.css';
 
-function AttendancePage() {
+function Principal_AttendancePage() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
@@ -160,4 +160,4 @@ function AttendancePage() {
   );
 }
 
-export default AttendancePage;
+export default Principal_AttendancePage;

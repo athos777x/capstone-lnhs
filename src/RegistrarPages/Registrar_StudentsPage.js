@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchFilter from '../Utilities/SearchFilter';
+import SearchFilter from '../RoleSearchFilters/SearchFilter';
 import axios from 'axios';
-import '../CssPage/StudentsPage.css';
+import '../RegistrarPagesCss/Registrar_StudentsPage.css';
 
-function StudentsPage() {
+function Registrar_StudentsPage() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
@@ -226,4 +226,4 @@ function StudentsPage() {
   );
 }
 
-export default StudentsPage;
+export default Registrar_StudentsPage;

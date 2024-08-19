@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import EnrolledStudentsSearchFilter from '../Utilities/EnrolledStudentsSearchFilter';
-import '../CssPage/EnrolledStudentsPage.css';
+import EnrolledStudentsSearchFilter from '../RoleSearchFilters/EnrolledStudentsSearchFilter';
+import '../CssPage/Principal_EnrolledStudentsPage.css';
 
-function EnrolledStudentsPage() {
+function Principal_EnrolledStudentsPage() {
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [totalEnrolledStudents, setTotalEnrolledStudents] = useState(0);
@@ -89,4 +89,4 @@ function EnrolledStudentsPage() {
   );
 }
 
-export default EnrolledStudentsPage;
+export default Principal_EnrolledStudentsPage;

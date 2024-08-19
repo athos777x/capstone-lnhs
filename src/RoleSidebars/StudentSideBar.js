@@ -8,12 +8,20 @@ import {
   FiClipboard,
   FiLogOut,
   FiMenu,
-  FiChevronLeft
+  FiChevronLeft,
+  FiFileText,
+  FiCheckSquare,
+  FiSettings
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
 function StudentSideBar({ showSidebar, toggleSidebar, handleLogout }) {
   const navigate = useNavigate();
+  const [showAcademicsSubMenu, setShowAcademicsSubMenu] = useState(false);
+
+  const toggleAcademicsSubMenu = () => {
+    setShowAcademicsSubMenu(!showAcademicsSubMenu);
+  };
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -31,14 +39,29 @@ function StudentSideBar({ showSidebar, toggleSidebar, handleLogout }) {
         <button onClick={() => handleNavigate('/profile')}>
           <FiUser className="icon" /> Profile
         </button>
-        <button onClick={() => handleNavigate('/academic-record')}>
-          <FiBook className="icon" /> Academics
-        </button>
+        <div className={`menu-with-submenu ${showAcademicsSubMenu ? 'active' : ''}`}>
+          <button onClick={toggleAcademicsSubMenu}>
+            <FiBook className="icon" /> Academics
+          </button>
+          {showAcademicsSubMenu && (
+            <div className="submenu">
+              <button onClick={() => handleNavigate('/student-grades')}>
+                <FiFileText className="icon" /> Grades
+              </button>
+              <button onClick={() => handleNavigate('/student-attendance')}>
+                <FiCheckSquare className="icon" /> Attendance
+              </button>
+            </div>
+          )}
+        </div>
         <button onClick={() => handleNavigate('/enrollment')}>
           <FiClipboard className="icon" /> Enrollment
         </button>
-        <button onClick={() => handleNavigate('/schedule')}>
+        <button onClick={() => handleNavigate('/student-schedule')}>
           <FiCalendar className="icon" /> Schedule
+        </button>
+        <button onClick={() => handleNavigate('/account')}>
+          <FiSettings className="icon" /> Account
         </button>
         <button onClick={() => handleLogout()}>
           <FiLogOut className="icon" /> Logout

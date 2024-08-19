@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import EmployeeSearchFilter from '../Utilities/EmployeeSearchFilter';
-import '../CssPage/EmployeePage.css';
+import EmployeeSearchFilter from '../RoleSearchFilters/EmployeeSearchFilter';
+import '../CssPage/Principal_EmployeePage.css';
 
-function EmployeePage() {
+function Principal_EmployeePage() {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -283,4 +283,4 @@ function EmployeePage() {
   );
 }
 
-export default EmployeePage;
+export default Principal_EmployeePage;
